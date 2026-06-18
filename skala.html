@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentasi Matematika: Skala - Kelas 5 SD</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Afacad+Flux:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* Setup Dasar & Variabel Warna Ceria Kontras */
+        :root {
+            --primary: #ff823a;
+            --secondary: #dcfd8b;
+            --accent: #bc84ee;
+            --dark: #1e293b;
+            --gray-light: #f8fafc;
+            --correct-bg: #dcfd8b;
+            --correct-border: #4ade80;
+            --incorrect-bg: #fca5a5;
+            --incorrect-border: #f87171;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #0f172a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Afacad Flux', sans-serif;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        /* Kontainer Utama Rasio 16:9 Tetap */
+        .presentation-container {
+            position: relative;
+            width: 1100px;
+            height: 650px;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Ornamen Latar Belakang Estetik Melingkar */
+        .presentation-container::before {
+            content: ''; position: absolute; top: -80px; right: -80px;
+            width: 300px; height: 300px; background: var(--secondary); border-radius: 50%; z-index: 0; opacity: 0.3;
+        }
+        .presentation-container::after {
+            content: ''; position: absolute; bottom: -50px; left: -50px;
+            width: 250px; height: 250px; background: var(--accent); border-radius: 50%; z-index: 0; opacity: 0.2;
+        }
+        .presentation-container > * { position: relative; z-index: 1; }
+
+        /* Struktur Slide */
+        .slide {
+            display: none;
+            width: 100%;
+            height: calc(100% - 64px);
+            padding: 40px 60px;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Tipografi Premium */
+        .slide-title {
+            font-family: 'Comfortaa', cursive;
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 24px;
+            border-bottom: 4px solid var(--primary);
+            padding-bottom: 8px;
+            display: inline-block;
+            width: 100%;
+        }
+
+        h1 { font-family: 'Comfortaa', cursive; font-size: 60px; color: var(--accent); line-height: 1.2; margin-bottom: 12px; }
+        h3 { font-family: 'Comfortaa', cursive; font-size: 24px; color: var(--primary); margin-bottom: 8px; }
+        p { font-size: 20px; color: #475569; line-height: 1.5; }
+        strong { color: var(--dark); }
+
+        /* Tata Letak Grid & Fleksibel */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .grid-equal {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .card {
+            background: var(--gray-light);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            flex: 1;
+        }
+
+        /* Komponen Interaktif (Input Jawab & Tombol) */
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            background: white;
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        .input-group p { font-size: 18px; flex-grow: 1; }
+
+        .input-field {
+            padding: 8px 12px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 8px;
+            border: 2px solid #cbd5e1;
+            width: 120px;
+            text-align: center;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .input-field:focus { border-color: var(--primary); }
+        .input-field.correct { background-color: var(--correct-bg) !important; border-color: var(--correct-border) !important; color: #166534; }
+        .input-field.incorrect { background-color: var(--incorrect-bg) !important; border-color: var(--incorrect-border) !important; color: #991b1b; }
+
+        .btn-check {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 15px;
+            transition: background 0.2s;
+        }
+        .btn-check:hover { background-color: #e66e2a; }
+
+        /* Lab Peta Eksplorasi (Slide 6) */
+        .map-window {
+            width: 100%;
+            height: 280px;
+            border: 4px solid var(--accent);
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            background: #f1f5f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .map-content {
+            width: 100%;
+            height: 100%;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .map-svg { width: 90%; height: 90%; }
+        .zoom-controls { margin-top: 15px; text-align: center; background: rgba(255,255,255,0.8); padding: 10px; border-radius: 10px; }
+        .zoom-slider { width: 200px; accent-color: var(--primary); vertical-align: middle; margin: 0 10px; }
+
+        /* Tangga Satuan Panjang (Slide 7) */
+        .ladder-container { display: flex; flex-direction: column; align-items: flex-start; padding-left: 40px; }
+        .ladder-step { background: #fdd5bd; border: 2px solid var(--primary); padding: 5px 20px; margin-bottom: 4px; border-radius: 6px; font-weight: 700; font-size: 16px; width: 90px; text-align: center; box-shadow: 3px 3px 0px rgba(0,0,0,0.05); }
+
+        /* Tabel Interaktif (Slide 8) */
+        .slide-table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .slide-table th, .slide-table td { padding: 12px 16px; border: 1px solid #e2e8f0; text-align: center; font-size: 16px; }
+        .slide-table th { background: var(--primary); color: white; font-family: 'Comfortaa'; font-weight: 700; }
+
+        /* Desain Tombol Kuis Akbar (Slide 11) */
+        .quiz-button {
+            background: linear-gradient(135deg, #ff823a 0%, #e66e2a 100%);
+            color: white;
+            padding: 22px 50px;
+            font-size: 30px;
+            font-weight: 700;
+            font-family: 'Comfortaa', cursive;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(255, 130, 58, 0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .quiz-button:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 15px 35px rgba(255, 130, 58, 0.6);
+        }
+
+        /* Komponen Struktur Segitiga Skala (Slide 12) */
+        .triangle-wrapper { display: flex; justify-content: center; align-items: center; }
+        .magic-triangle {
+            width: 0; height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-bottom: 250px solid var(--accent);
+            position: relative;
+        }
+        .t-text { position: absolute; font-weight: 700; color: white; text-align: center; font-family: 'Comfortaa'; }
+
+        /* Tata Letak Khusus Cover Halaman */
+        .slide-cover {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .slide-cover p { color: #cbd5e1; }
+
+        /* Navigasi Control Bar Bawah */
+        .presentation-footer {
+            height: 64px;
+            background: var(--dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0px 40px;
+            z-index: 10;
+            margin-top: auto;
+        }
+        .nav-btn {
+            background: #334155; color: white; border: none; padding: 8px 20px; border-radius: 8px;
+            font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; font-size: 16px;
+        }
+        .nav-btn:hover:not(:disabled) { background: var(--primary); }
+        .nav-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+        
+        .dots-group { display: flex; gap: 8px; }
+        .dot { width: 10px; height: 10px; background: #475569; border-radius: 50%; transition: all 0.2s; }
+        .dot.active { background: var(--primary); transform: scale(1.3); }
+
+        ul.styled-list { list-style: none; }
+        ul.styled-list li { position: relative; padding-left: 30px; margin-bottom: 12px; font-size: 18px; color: #475569; }
+        ul.styled-list li::before { content: "\f0a4"; font-family: "Font Awesome 5 Free"; font-weight: 900; position: absolute; left: 0; color: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <div class="presentation-container">
+        
+        <div class="slide slide-cover active" id="slide-1">
+            <div style="background: rgba(255,130,58,0.15); padding: 6px 20px; border-radius: 30px; border: 1px solid var(--primary); display: inline-block; margin-bottom: 15px;">
+                <span style="font-weight: 700; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; font-size: 14px;">Cambridge Framework</span>
+            </div>
+            <h1>DUNIA DALAM SKALA</h1>
+            <p style="font-size: 26px; font-weight: 700; color: var(--secondary);">Eksplorasi Matematika Interaktif - Kelas 5 SD</p>
+            <div style="margin-top: 30px;">
+                <i class="fa-solid fa-map-location-dot" style="font-size: 90px; color: var(--primary);"></i>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-2">
+            <div class="slide-title">Mari Mengamati!</div>
+            <div class="content-area">
+                <div class="grid-2">
+                    <div>
+                        <p style="font-size: 24px; font-weight: 700; color: var(--accent); margin-bottom: 15px;">Halo Petualang Muda! 👋</p>
+                        <p style="margin-bottom: 20px;">Pernahkah kamu memperhatikan area pojok bawah suatu gambar denah atau peta wilayah?</p>
+                        <div style="background: #fdd5bd; padding: 20px; border-radius: 12px; border-left: 6px solid var(--primary);">
+                            <p style="font-weight: 700; color: #b45309; font-size: 18px;">🗣️ Pertanyaan Diskusi Kelas:</p>
+                            <p style="font-size: 20px; font-style: italic; margin-top: 5px;">"Bagaimana bisa kota atau benua yang sangat besar dan luas di dunia nyata bisa muat digambar dalam selembar kertas kecil?"</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="border-radius: 16px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); background: #e0f2fe; padding: 20px; text-align: center;">
+                            <svg viewBox="0 0 200 120" style="width: 100%; height: auto; background:#93c5fd; border-radius: 10px;">
+                                <path d="M20,40 Q40,20 70,50 T130,30 T180,60 L200,120 L0,120 Z" fill="#4ade80" />
+                                <path d="M50,80 Q90,60 120,90 T170,80" fill="none" stroke="#f59e0b" stroke-width="3" stroke-dasharray="4" />
+                                <circle cx="50" cy="80" r="4" fill="#ef4444" />
+                                <circle cx="170" cy="80" r="4" fill="#3b82f6" />
+                            </svg>
+                            <div style="margin-top: 12px; font-weight: 700; font-size: 18px; color: var(--dark);">
+                                <i class="fa-solid fa-ruler"></i> Skala = 1 : 1.000.000
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-3">
+            <div class="slide-title">Target Pembelajaran Hari Ini</div>
+            <div class="content-area" style="margin-top: 15px;">
+                <div class="grid-equal">
+                    <div class="card" style="text-align: center;">
+                        <i class="fa-solid fa-brain" style="font-size: 40px; color: var(--accent); margin-bottom: 12px;"></i>
+                        <h3>Memahami Konsep</h3>
+                        <p style="font-size: 16px; margin-top: 5px;">Siswa memahami arti dari fungsi rasio skala pada gambar objek fisik.</p>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <i class="fa-solid fa-file-signature" style="font-size: 40px; color: var(--primary); margin-bottom: 12px;"></i>
+                        <h3>Menulis Bentuk</h3>
+                        <p style="font-size: 16px; margin-top: 5px;">Siswa mampu menuliskan notasi perbandingan skala dalam format matematika standar.</p>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <i class="fa-solid fa-calculator" style="font-size: 40px; color: #10b981; margin-bottom: 12px;"></i>
+                        <h3>Konversi Jarak</h3>
+                        <p style="font-size: 16px; margin-top: 5px;">Mampu menghitung ukuran jarak sebenarnya berdasarkan peta dan sebaliknya secara presisi.</p>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <i class="fa-solid fa-link" style="font-size: 40px; color: #3b82f6; margin-bottom: 12px;"></i>
+                        <h3>Hubungan Rasio</h3>
+                        <p style="font-size: 16px; margin-top: 5px;">Mampu mengaitkan pengaplikasian skala ke dalam konsep dasar penyederhanaan rasio.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-4">
+            <div class="slide-title">Pemanasan: Tantangan Hubungan Rasio</div>
+            <div class="content-area">
+                <p style="font-size: 16px; margin-bottom: 15px; font-weight: bold; color: var(--accent);"><i class="fa-solid fa-circle-info"></i> Tuliskan jawaban dalam bentuk rasio paling sederhana (contoh penulisan: 2:1 atau 1:3 tanpa spasi!)</p>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <div class="input-group">
+                        <p>1. Ada 10 apel merah dan 5 apel hijau. Berapa rasio <strong>Apel Merah : Hijau</strong>?</p>
+                        <input type="text" class="input-field" id="s4-a1">
+                        <button class="btn-check" onclick="verifyRatio('s4-a1', '2:1')">Cek</button>
+                    </div>
+                    <div class="input-group">
+                        <p>2. Di kelas terdapat 12 anak laki-laki dan 18 perempuan. Rasio <strong>Laki-Laki : Perempuan</strong>?</p>
+                        <input type="text" class="input-field" id="s4-a2">
+                        <button class="btn-check" onclick="verifyRatio('s4-a2', '2:3')">Cek</button>
+                    </div>
+                    <div class="input-group">
+                        <p>3. Kakak mengoleksi 4 komik dan 12 buku tulis. Berapa rasio jumlah <strong>Komik : Buku Tulis</strong>?</p>
+                        <input type="text" class="input-field" id="s4-a3">
+                        <button class="btn-check" onclick="verifyRatio('s4-a3', '1:3')">Cek</button>
+                    </div>
+                    <div class="input-group">
+                        <p>4. Ada 40 pulpen biru dan 10 pulpen hitam. Berapa rasio jumlah <strong>Pulpen Biru : Hitam</strong>?</p>
+                        <input type="text" class="input-field" id="s4-a4">
+                        <button class="btn-check" onclick="verifyRatio('s4-a4', '4:1')">Cek</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-5">
+            <div class="slide-title">Definisi dan Konsep Inti Skala</div>
+            <div class="content-area">
+                <div class="grid-2">
+                    <div style="background: var(--gray-light); padding: 30px; border-radius: 20px; border: 3px dashed var(--accent); text-align: center;">
+                        <h2 style="font-size: 44px; color: var(--primary); font-family:'Comfortaa';">Skala 1 : 500</h2>
+                        <div style="margin: 15px 0; font-weight: 700; color: #64748b; font-size: 18px;">ARTINYA ADALAH:</div>
+                        <p style="font-size: 22px; font-weight: bold; color: var(--dark);">1 cm pada Peta / Gambar</p>
+                        <p style="font-size: 16px; font-weight: 700; color: var(--accent); margin: 6px 0;"><i class="fa-solid fa-arrows-left-right"></i> MEWAKILI <i class="fa-solid fa-arrows-left-right"></i></p>
+                        <p style="font-size: 22px; font-weight: bold; color: #10b981;">500 cm pada Jarak Sebenarnya</p>
+                    </div>
+                    <div>
+                        <p style="margin-bottom: 15px;"><strong>Skala</strong> merupakan wujud nyata penerapan rasio khusus yang membandingkan ukuran pada gambar dengan ukuran asli objek sesungguhnya.</p>
+                        <ul class="styled-list">
+                            <li>Satuan pembanding skala selalu disetarakan ke dalam bentuk <strong>Sentimeter (cm)</strong>.</li>
+                            <li>Sangat berguna untuk arsitek, pembuatan peta, pembuat miniatur maket, maupun desainer game.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-6">
+            <div class="slide-title">Laboratorium Eksplorasi Skala Dinamis</div>
+            <div class="content-area">
+                <div class="grid-2">
+                    <div>
+                        <div class="map-window">
+                            <div class="map-content" id="map-viewport">
+                                <svg class="map-svg" viewBox="0 0 100 100">
+                                    <rect width="100" height="100" fill="#bae6fd" rx="6"/>
+                                    <circle cx="30" cy="40" r="15" fill="#fef08a" opacity="0.8"/>
+                                    <polygon points="50,30 75,55 55,80 35,60" fill="#a7f3d0" stroke="#059669" stroke-width="1"/>
+                                    <circle cx="55" cy="55" r="3" fill="#ef4444"/>
+                                    <text x="52" y="50" font-size="4" font-weight="bold" fill="#334155">Kota A</text>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="zoom-controls">
+                            <i class="fa-solid fa-minus"></i>
+                            <input type="range" min="1" max="4" step="0.5" value="1" class="zoom-slider" id="zoom-range" oninput="handleMapZoom(this.value)">
+                            <i class="fa-solid fa-plus"></i>
+                            <span id="zoom-status" style="margin-left:15px; font-weight:700; color:var(--primary);">Skala 1:1.000.000 (Normal)</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="card" style="background:#fef08a; border:none;">
+                            <h3 style="color:#a16207; margin-bottom:10px;"><i class="fa-solid fa-circle-check"></i> Hukum Utama Skala:</h3>
+                            <p style="font-size: 18px; color: #713f12; line-height: 1.6;">
+                                1. Jika angka perbandingan skala <strong>semakin besar</strong> (Zoom Out), area cakupan peta menjadi sangat luas namun penampakan objek otomatis menjadi <strong>semakin kecil</strong>.<br><br>
+                                2. Jika angka perbandingan skala <strong>semakin kecil</strong> (Zoom In), area gambar terfokus mengecil tetapi detail objek tampak menjadi <strong>semakin besar</strong>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-7">
+            <div class="slide-title">Mengingat Kembali Tangga Satuan Jarak</div>
+            <div class="content-area">
+                <div class="grid-2">
+                    <div class="ladder-container">
+                        <div class="ladder-step" style="margin-left: 0px;">km (Kilometer)</div>
+                        <div class="ladder-step" style="margin-left: 25px;">hm</div>
+                        <div class="ladder-step" style="margin-left: 50px;">dam</div>
+                        <div class="ladder-step" style="margin-left: 75px;">m (Meter)</div>
+                        <div class="ladder-step" style="margin-left: 100px;">dm</div>
+                        <div class="ladder-step" style="margin-left: 125px;">cm</div>
+                        <div class="ladder-step" style="margin-left: 150px;">mm</div>
+                    </div>
+                    <div>
+                        <div class="card" style="margin-bottom: 15px;">
+                            <p><i class="fa-solid fa-stairs" style="color:var(--primary);"></i> Setiap kali <strong>TURUN 1 anak tangga</strong> &rarr; dikalikan 10</p>
+                        </div>
+                        <div class="card" style="margin-bottom: 15px;">
+                            <p><i class="fa-solid fa-angles-up" style="color:var(--accent);"></i> Setiap kali <strong>NAIK 1 anak tangga</strong> &rarr; dibagi 10</p>
+                        </div>
+                        <div class="card" style="background:#dcfd8b; border: 2px solid #22c55e;">
+                            <p style="font-weight: 700; text-align: center; font-size: 22px;">Konversi Emas Skala:<br>1 km = 100.000 cm<br>1 m = 100 cm</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-8">
+            <div class="slide-title">Latihan Mandiri: Menentukan Skala Peta</div>
+            <div class="content-area">
+                <p style="font-size: 16px; margin-bottom: 15px; font-weight: bold; color: var(--primary);">Hitunglah nilai penyebut skala berdasarkan informasi jarak kota berikut ini!</p>
+                <table class="slide-table">
+                    <thead>
+                        <tr>
+                            <th>Rute Kota</th>
+                            <th>Jarak Pada Peta (cm)</th>
+                            <th>Jarak Sebenarnya</th>
+                            <th>Input Skala (1 : ...)</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Kota A ke Kota B</strong></td>
+                            <td>2 cm</td>
+                            <td>10 km (1.000.000 cm)</td>
+                            <td>1 : <input type="number" class="input-field" id="s8-v1" placeholder="Angka"></td>
+                            <td><button class="btn-check" onclick="verifyExactNum('s8-v1', 500000)">Verifikasi</button></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Kota C ke Kota D</strong></td>
+                            <td>5 cm</td>
+                            <td>25 km (2.500.000 cm)</td>
+                            <td>1 : <input type="number" class="input-field" id="s8-v2" placeholder="Angka"></td>
+                            <td><button class="btn-check" onclick="verifyExactNum('s8-v2', 500000)">Verifikasi</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-9">
+            <div class="slide-title">Menghitung Ukuran Jarak Pada Peta</div>
+            <div class="content-area">
+                <div class="grid-2">
+                    <div>
+                        <div class="card" style="border-left: 6px solid var(--accent); margin-bottom: 15px;">
+                            <p style="font-size: 18px;">Seorang kartografer menggambar sketsa peta baru dengan ketentuan standardisasi nilai skala sebesar <strong>1 : 200.000</strong>.</p>
+                        </div>
+                        <p style="font-size:16px; font-weight:700; color:var(--primary);"><i class="fa-solid fa-pencil"></i> Tentukan berapa cm ukuran panjang gambar rutenya:</p>
+                    </div>
+                    <div>
+                        <div style="display:flex; flex-direction:column; gap:10px;">
+                            <div class="input-group">
+                                <p>Jarak Asli Rute A &rarr; B (6 km)</p>
+                                <input type="number" class="input-field" id="s9-v1" placeholder="... cm">
+                                <button class="btn-check" onclick="verifyExactNum('s9-v1', 3)">Cek</button>
+                            </div>
+                            <div class="input-group">
+                                <p>Jarak Asli Rute A &rarr; C (10 km)</p>
+                                <input type="number" class="input-field" id="s9-v2" placeholder="... cm">
+                                <button class="btn-check" onclick="verifyExactNum('s9-v2', 5)">Cek</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-10">
+            <div class="slide-title">Menemukan Nilai Jarak Asli Sebenarnya</div>
+            <div class="content-area">
+                <div class="grid-2">
+                    <div>
+                        <div style="background:#e0f2fe; padding:15px; border-radius:12px; margin-bottom:15px; border: 2px solid #7dd3fc;">
+                            <p style="font-size:18px;">🗺️ <strong>Peta Harta Karun Maluku:</strong> Skala tercantum pada lembar perkamen berukuran <strong>1 : 100.000</strong>.</p>
+                        </div>
+                        <p style="font-size: 16px; font-weight:700; color:var(--accent);">Hitung estimasi panjang perjalanan asli dalam satuan <strong>Kilometer (km)</strong>:</p>
+                    </div>
+                    <div>
+                        <div style="display:flex; flex-direction:column; gap:8px;">
+                            <div class="input-group">
+                                <p>Jika jarak peta Poin A ke B = 5 cm</p>
+                                <input type="number" class="input-field" id="s10-v1" placeholder="... km">
+                                <button class="btn-check" onclick="verifyExactNum('s10-v1', 5)">Cek</button>
+                            </div>
+                            <div class="input-group">
+                                <p>Jika jarak peta Poin B ke C = 8 cm</p>
+                                <input type="number" class="input-field" id="s10-v2" placeholder="... km">
+                                <button class="btn-check" onclick="verifyExactNum('s10-v2', 8)">Cek</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide slide-cover" id="slide-11">
+            <div style="background: rgba(255,255,255,0.1); padding: 12px 30px; border-radius: 50px; display: inline-block; margin-bottom: 10px;">
+                <span style="color: var(--secondary); font-weight: 700; font-size: 18px; letter-spacing: 2px;">TIME FOR CHALLENGE</span>
+            </div>
+            <h1 style="font-size: 54px; text-shadow: 3px 3px 0px var(--primary); color: white;">UJI KEMAMPUANMU! 🌟</h1>
+            <p style="font-size: 22px; max-width: 700px; margin: 15px auto; line-height: 1.6;">Siapkan lembar buram, penggaris, dan konsentrasi tinggi. Klik tombol sakti di bawah untuk langsung membuka tantangan kuis interaktif!</p>
+            
+            <a href="https://wayground.com/admin/quiz/6a337bfaaf25ed4c72d09f80" target="_blank" class="quiz-button" onclick="handleQuizClick(event)">
+                MULAI KUIS SEKARANG <i class="fa-solid fa-rocket" style="margin-left: 10px;"></i>
+            </a>
+        </div>
+
+        <div class="slide" id="slide-12">
+            <div class="slide-title">Kesimpulan: Segitiga Hubungan Rumus</div>
+            <div class="content-area">
+                <div class="grid-2">
+                    <div class="triangle-wrapper">
+                        <div class="magic-triangle">
+                            <div class="t-text" style="top: 80px; left: -60px; width: 120px; font-size:18px;">Jp<br><span style="font-size:12px; font-weight: normal; opacity: 0.9;">Jarak Peta</span></div>
+                            <div class="t-text" style="top: 185px; left: -115px; width: 100px; font-size:18px;">S<br><span style="font-size:12px; font-weight: normal; opacity: 0.9;">Skala</span></div>
+                            <div class="t-text" style="top: 185px; left: 15px; width: 100px; font-size:18px;">Js<br><span style="font-size:12px; font-weight: normal; opacity: 0.9;">Jarak Asli</span></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="card" style="background: white; border: 2px solid var(--accent); padding: 25px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);">
+                            <h3 style="color: var(--dark); font-size: 20px; margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px;">
+                                <i class="fa-solid fa-hand-pointer" style="color: var(--accent);"></i> <strong>Trik Jari Ajaib:</strong> Tutup huruf yang dicari!
+                            </h3>
+                            <div style="display: flex; flex-direction: column; gap: 14px;">
+                                <p style="font-size: 19px; display: flex; align-items: center; gap: 12px;">
+                                    <span style="background: var(--primary); color: white; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: bold;">Jp</span>
+                                    <span><strong>S &times; Js</strong> <br><small style="color: #64748b; font-size: 14px;">Skala dikali Jarak Sebenarnya</small></span>
+                                </p>
+                                <p style="font-size: 19px; display: flex; align-items: center; gap: 12px;">
+                                    <span style="background: var(--accent); color: white; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: bold;">Js</span>
+                                    <span><strong>Jp &divide; S</strong> <br><small style="color: #64748b; font-size: 14px;">Jarak Peta dibagi Angka Skala</small></span>
+                                </p>
+                                <p style="font-size: 19px; display: flex; align-items: center; gap: 12px;">
+                                    <span style="background: #10b981; color: white; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: bold;">S</span>
+                                    <span><strong>Jp &divide; Js</strong> <br><small style="color: #64748b; font-size: 14px;">Jarak Peta dibagi Jarak Sebenarnya</small></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide slide-cover" id="slide-13">
+            <h1 style="color: var(--secondary); font-size: 64px;">TERIMA KASIH! ✨</h1>
+            <p style="font-size: 26px;">Kamu Hebat Telah Menjadi Master Skala Hari Ini!</p>
+            <div style="margin: 25px 0;">
+                <i class="fa-solid fa-face-smile-beam" style="font-size: 110px; color: var(--primary);"></i>
+            </div>
+            <p style="font-size: 15px; color: #94a3b8;">Cambridge Primary Mathematics Framework - Scale Study Complete</p>
+        </div>
+
+        <div class="presentation-footer">
+            <button class="nav-btn" id="prev-btn" onclick="navigateSlide(-1)" disabled>
+                <i class="fa-solid fa-chevron-left"></i> Kembali
+            </button>
+            <div class="dots-group" id="dots-box"></div>
+            <button class="nav-btn" id="next-btn" onclick="navigateSlide(1)">
+                Lanjut <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        const maxSlides = 13;
+        let activeSlideNum = 1;
+
+        // Inisialisasi Titik Indikator Navigasi Bawah
+        window.onload = function() {
+            const box = document.getElementById('dots-box');
+            box.innerHTML = '';
+            for(let idx = 1; idx <= maxSlides; idx++) {
+                let node = document.createElement('div');
+                node.className = `dot ${idx === 1 ? 'active' : ''}`;
+                box.appendChild(node);
+            }
+        };
+
+        function syncDots() {
+            const list = document.querySelectorAll('.dot');
+            list.forEach((node, i) => {
+                if(i + 1 === activeSlideNum) node.classList.add('active');
+                else node.classList.remove('active');
+            });
+        }
+
+        function navigateSlide(offset) {
+            document.getElementById(`slide-${activeSlideNum}`).classList.remove('active');
+            activeSlideNum += offset;
+            if(activeSlideNum < 1) activeSlideNum = 1;
+            if(activeSlideNum > maxSlides) activeSlideNum = maxSlides;
+            
+            document.getElementById(`slide-${activeSlideNum}`).classList.add('active');
+            
+            document.getElementById('prev-btn').disabled = (activeSlideNum === 1);
+            document.getElementById('next-btn').disabled = (activeSlideNum === maxSlides);
+            syncDots();
+        }
+
+        // Web Audio API generator suara instan tanpa file aset eksternal
+        function createFeedbackAudio(isSuccess) {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                
+                if (isSuccess) {
+                    let osc = ctx.createOscillator();
+                    let gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.08);
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.start(); osc.stop(ctx.currentTime + 0.25);
+                } else {
+                    let osc = ctx.createOscillator();
+                    let gain = ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(140, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.25, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.start(); osc.stop(ctx.currentTime + 0.35);
+                }
+            } catch(e) { console.log("Audio permission blocked or unsupported."); }
+        }
+
+        // Validasi String Rasio (Slide 4)
+        function verifyRatio(elementId, matchString) {
+            const targetInput = document.getElementById(elementId);
+            let rawVal = targetInput.value.replace(/\s+/g, '');
+            if (rawVal === matchString) {
+                targetInput.className = "input-field correct";
+                createFeedbackAudio(true);
+            } else {
+                targetInput.className = "input-field incorrect";
+                createFeedbackAudio(false);
+            }
+        }
+
+        // Validasi Angka Numerik Pas (Slide 8, 9, 10)
+        function verifyExactNum(elementId, correctNum) {
+            const targetInput = document.getElementById(elementId);
+            if (parseInt(targetInput.value) === correctNum) {
+                targetInput.className = "input-field correct";
+                createFeedbackAudio(true);
+            } else {
+                targetInput.className = "input-field incorrect";
+                createFeedbackAudio(false);
+            }
+        }
+
+        // Kontrol Zoom Lab Peta Dinamik (Slide 6)
+        function handleMapZoom(multiplier) {
+            const layer = document.getElementById('map-viewport');
+            const stateText = document.getElementById('zoom-status');
+            layer.style.transform = `scale(${multiplier})`;
+            
+            if(multiplier == 1) {
+                stateText.innerText = "Skala 1:1.000.000 (Normal)";
+            } else if (multiplier <= 2.5) {
+                stateText.innerText = "Skala 1:500.000 (Sedang)";
+            } else {
+                stateText.innerText = "Skala 1:250.000 (Detail Besar)";
+            }
+        }
+
+        // Aksi Efek saat tombol kuis ditekan
+        function handleQuizClick(e) {
+            createFeedbackAudio(true);
+            console.log("Membuka tautan kuis eksternal...");
+        }
+    </script>
+</body>
+</html>
