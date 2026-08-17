@@ -1,0 +1,3165 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skala — Presentasi Interaktif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --bg: #FFF6E9;
+  --bg-2: #FFEBD0;
+  --bg-3: #FFE0B8;
+  --fg: #2A1810;
+  --fg-2: #5C3D2E;
+  --muted: #8C7A6B;
+  --coral: #FF5A36;
+  --coral-soft: #FFE2D8;
+  --teal: #0D9488;
+  --teal-soft: #CCEAE5;
+  --amber: #F59E0B;
+  --amber-soft: #FEF0C7;
+  --green: #16A34A;
+  --green-soft: #DCFCE7;
+  --red: #DC2626;
+  --card: #FFFFFF;
+  --border: #F0D9C4;
+  --shadow-sm: 0 2px 8px rgba(255, 90, 54, 0.08);
+  --shadow: 0 8px 28px rgba(255, 90, 54, 0.12);
+  --shadow-lg: 0 16px 48px rgba(255, 90, 54, 0.18);
+  --radius: 18px;
+  --radius-lg: 28px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 8% 15%, rgba(255, 90, 54, 0.12), transparent 35%),
+    radial-gradient(circle at 92% 85%, rgba(13, 148, 136, 0.12), transparent 35%),
+    radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.06), transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 25px 25px, rgba(255, 90, 54, 0.05) 1.5px, transparent 1.5px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Progress bar */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  background: var(--bg-2);
+  z-index: 100;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--coral), var(--amber));
+  width: 9%;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 12px rgba(255, 90, 54, 0.5);
+}
+
+/* Slide container */
+.deck {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  padding: 70px 80px 90px;
+  display: none;
+  flex-direction: column;
+  overflow-y: auto;
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.slide.active {
+  display: flex;
+  opacity: 1;
+  transform: translateX(0);
+  animation: slideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Slide header */
+.slide-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  flex-shrink: 0;
+}
+.slide-num {
+  font-family: 'Fraunces', serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--coral);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.slide-num::before {
+  content: '';
+  width: 32px;
+  height: 2px;
+  background: var(--coral);
+}
+.slide-tag {
+  padding: 6px 14px;
+  background: var(--teal-soft);
+  color: var(--teal);
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+/* Typography */
+h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 900;
+  font-size: clamp(48px, 6vw, 88px);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: var(--fg);
+}
+h2 {
+  font-family: 'Fraunces', serif;
+  font-weight: 800;
+  font-size: clamp(36px, 4vw, 56px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+  margin-bottom: 16px;
+}
+h3 {
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  font-size: 24px;
+  color: var(--fg);
+}
+p {
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--fg-2);
+}
+.lead {
+  font-size: 20px;
+  line-height: 1.5;
+  color: var(--fg-2);
+}
+.highlight {
+  color: var(--coral);
+  font-weight: 700;
+}
+.teal-text { color: var(--teal); font-weight: 700; }
+.amber-text { color: var(--amber); font-weight: 700; }
+
+/* Navigation */
+.nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: rgba(255, 246, 233, 0.92);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  z-index: 50;
+}
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  background: var(--fg);
+  color: var(--bg);
+  border: none;
+  border-radius: 100px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.nav-btn:hover:not(:disabled) {
+  background: var(--coral);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 90, 54, 0.3);
+}
+.nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.nav-btn.secondary {
+  background: transparent;
+  color: var(--fg);
+  border: 2px solid var(--border);
+}
+.nav-btn.secondary:hover:not(:disabled) {
+  background: var(--card);
+  border-color: var(--coral);
+  color: var(--coral);
+}
+
+.indicators {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.dot.active {
+  background: var(--coral);
+  width: 32px;
+  border-radius: 100px;
+}
+.dot:hover { background: var(--coral-soft); }
+.dot.active:hover { background: var(--coral); }
+
+/* ========== SLIDE 1: COVER ========== */
+.cover {
+  justify-content: center;
+  padding: 80px 100px;
+}
+.cover-content {
+  max-width: 900px;
+}
+.cover-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--coral);
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-sm);
+}
+.cover-badge i {
+  font-size: 14px;
+}
+.cover h1 {
+  margin-bottom: 24px;
+}
+.cover h1 .accent {
+  color: var(--coral);
+  font-style: italic;
+  font-weight: 400;
+}
+.cover h1 .accent-2 {
+  color: var(--teal);
+  font-style: italic;
+  font-weight: 400;
+}
+.cover-subtitle {
+  font-size: 22px;
+  color: var(--fg-2);
+  margin-bottom: 40px;
+  max-width: 680px;
+  line-height: 1.5;
+}
+.cover-features {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+}
+.cover-feature {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--fg);
+}
+.cover-feature i {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--coral-soft);
+  color: var(--coral);
+}
+.cover-feature:nth-child(2) i {
+  background: var(--teal-soft);
+  color: var(--teal);
+}
+.cover-feature:nth-child(3) i {
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+.cover-feature:nth-child(4) i {
+  background: var(--green-soft);
+  color: var(--green);
+}
+.cover-cta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.btn-primary {
+  padding: 18px 36px;
+  background: var(--coral);
+  color: white;
+  border: none;
+  border-radius: 100px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s;
+  box-shadow: 0 8px 24px rgba(255, 90, 54, 0.3);
+}
+.btn-primary:hover {
+  background: #FF6B47;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(255, 90, 54, 0.4);
+}
+.btn-ghost {
+  padding: 18px 30px;
+  background: transparent;
+  color: var(--fg);
+  border: 2px solid var(--border);
+  border-radius: 100px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s;
+}
+.btn-ghost:hover {
+  background: var(--card);
+  border-color: var(--coral);
+  color: var(--coral);
+}
+
+/* Cover decoration */
+.cover-deco {
+  position: absolute;
+  right: 80px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 380px;
+  height: 380px;
+  pointer-events: none;
+}
+.deco-circle {
+  position: absolute;
+  border-radius: 50%;
+  animation: float 6s ease-in-out infinite;
+}
+.deco-circle:nth-child(1) {
+  width: 280px; height: 280px;
+  background: linear-gradient(135deg, var(--coral), var(--amber));
+  top: 50px; right: 50px;
+  opacity: 0.9;
+}
+.deco-circle:nth-child(2) {
+  width: 120px; height: 120px;
+  background: var(--teal);
+  bottom: 30px; left: 30px;
+  animation-delay: -2s;
+}
+.deco-circle:nth-child(3) {
+  width: 80px; height: 80px;
+  background: var(--amber);
+  top: 30px; left: 80px;
+  animation-delay: -4s;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+/* ========== GENERAL SLIDE COMPONENTS ========== */
+.content-grid {
+  display: grid;
+  gap: 24px;
+  flex: 1;
+  align-content: start;
+}
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  transition: all 0.3s;
+}
+.card:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-3px);
+}
+.card-coral { border-left: 5px solid var(--coral); }
+.card-teal { border-left: 5px solid var(--teal); }
+.card-amber { border-left: 5px solid var(--amber); }
+.card-green { border-left: 5px solid var(--green); }
+
+/* ========== SLIDE 2: KONSEP ========== */
+.konsep-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 32px;
+  flex: 1;
+  align-content: start;
+}
+.konsep-visual {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.konsep-visual::before {
+  content: '';
+  position: absolute;
+  top: -50%; right: -50%;
+  width: 100%; height: 100%;
+  background: radial-gradient(circle, var(--amber-soft), transparent 70%);
+}
+.scale-demo {
+  display: flex;
+  align-items: flex-end;
+  gap: 30px;
+  position: relative;
+  z-index: 1;
+}
+.scale-object {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+.scale-object .obj {
+  background: linear-gradient(135deg, var(--coral), var(--amber));
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(255, 90, 54, 0.3);
+  transition: all 0.5s;
+}
+.scale-object .obj-1 { width: 200px; height: 120px; }
+.scale-object .obj-2 { width: 100px; height: 60px; }
+.scale-object .obj-3 { width: 50px; height: 30px; }
+.scale-object .label {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--fg);
+}
+.scale-object .sub {
+  font-size: 12px;
+  color: var(--muted);
+}
+.scale-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  align-self: center;
+}
+.scale-arrow i {
+  font-size: 20px;
+  color: var(--coral);
+}
+.scale-arrow span {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ========== SLIDE 3: JENIS SKALA ========== */
+.jenis-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  flex: 1;
+  align-content: start;
+}
+.jenis-card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.jenis-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+}
+.jenis-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+.jenis-card.besar .jenis-icon { background: var(--coral-soft); color: var(--coral); }
+.jenis-card.sedang .jenis-icon { background: var(--amber-soft); color: var(--amber); }
+.jenis-card.kecil .jenis-icon { background: var(--teal-soft); color: var(--teal); }
+.jenis-card h3 { font-size: 22px; }
+.jenis-scale {
+  font-family: 'Fraunces', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--fg);
+  padding: 8px 0;
+}
+.jenis-card.besar .jenis-scale { color: var(--coral); }
+.jenis-card.sedang .jenis-scale { color: var(--amber); }
+.jenis-card.kecil .jenis-scale { color: var(--teal); }
+.jenis-detail {
+  font-size: 14px;
+  color: var(--fg-2);
+  line-height: 1.5;
+}
+.jenis-use {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border);
+  font-size: 13px;
+  color: var(--muted);
+}
+.jenis-use strong {
+  color: var(--fg);
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ========== SLIDE 4: PETA INTERAKTIF ========== */
+.peta-stage {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  flex: 1;
+  align-content: start;
+}
+.peta-container {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  position: relative;
+}
+.peta-wrap {
+  background: linear-gradient(135deg, #FEF9F0, #FFE9C8);
+  border-radius: var(--radius);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+#petaSvg {
+  display: block;
+  width: 100%;
+  height: auto;
+  cursor: crosshair;
+}
+.peta-overlay {
+  position: absolute;
+  top: 32px;
+  left: 32px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.peta-overlay i { color: var(--coral); }
+
+.scale-bar-vis {
+  position: absolute;
+  bottom: 32px;
+  left: 32px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 10px 14px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.scale-bar-vis .bar {
+  width: 60px;
+  height: 6px;
+  background: linear-gradient(90deg, var(--fg) 50%, transparent 50%);
+  background-size: 12px 100%;
+  border: 1px solid var(--fg);
+}
+
+.peta-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.peta-info-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+}
+.peta-info-card h4 {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.peta-info-card h4 i { color: var(--coral); }
+
+.scale-control {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.scale-control label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.scale-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.scale-btn {
+  padding: 10px 8px;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--fg);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.scale-btn:hover {
+  border-color: var(--coral);
+  color: var(--coral);
+}
+.scale-btn.active {
+  background: var(--coral);
+  border-color: var(--coral);
+  color: white;
+}
+
+.measurement-display {
+  background: linear-gradient(135deg, var(--coral), var(--amber));
+  color: white;
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+}
+.measurement-display .label {
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.measurement-display .value {
+  font-family: 'Fraunces', serif;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+}
+.measurement-display .unit {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-top: 4px;
+}
+.measurement-display.empty {
+  background: var(--bg-2);
+  color: var(--muted);
+}
+
+.measurement-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.meas-item {
+  background: var(--bg);
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+}
+.meas-item .lbl {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+.meas-item .val {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.peta-instruction {
+  font-size: 13px;
+  color: var(--fg-2);
+  line-height: 1.5;
+  padding: 14px;
+  background: var(--amber-soft);
+  border-radius: 12px;
+  border-left: 3px solid var(--amber);
+}
+.peta-instruction strong { color: var(--fg); }
+
+/* ========== SLIDE 5: RUMUS ========== */
+.rumus-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  flex: 1;
+  align-content: start;
+}
+.rumus-card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  transition: all 0.3s;
+}
+.rumus-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+}
+.rumus-num {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--coral);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 800;
+}
+.rumus-card:nth-child(2) .rumus-num { background: var(--teal); }
+.rumus-card:nth-child(3) .rumus-num { background: var(--amber); }
+.rumus-card h3 { font-size: 20px; }
+.rumus-formula {
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 18px;
+  text-align: center;
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--fg);
+  border: 2px dashed var(--border);
+}
+.rumus-formula .frac {
+  display: inline-flex;
+  flex-direction: column;
+  vertical-align: middle;
+  margin: 0 4px;
+  font-size: 16px;
+}
+.rumus-formula .frac span:first-child {
+  border-bottom: 2px solid var(--fg);
+  padding: 0 6px 2px;
+}
+.rumus-formula .frac span:last-child {
+  padding: 2px 6px 0;
+}
+.rumus-detail {
+  font-size: 14px;
+  color: var(--fg-2);
+  line-height: 1.5;
+}
+.rumus-detail strong {
+  color: var(--coral);
+}
+
+/* ========== SLIDE 6-8: STEP BY STEP ========== */
+.step-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  flex: 1;
+  align-content: start;
+}
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.step {
+  display: flex;
+  gap: 18px;
+  background: var(--card);
+  padding: 22px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  transition: all 0.3s;
+}
+.step:hover {
+  box-shadow: var(--shadow);
+  transform: translateX(4px);
+}
+.step-num {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--coral);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.step:nth-child(2) .step-num { background: var(--teal); }
+.step:nth-child(3) .step-num { background: var(--amber); }
+.step:nth-child(4) .step-num { background: var(--green); }
+.step-content h4 {
+  font-family: 'Fraunces', serif;
+  font-size: 17px;
+  margin-bottom: 4px;
+  color: var(--fg);
+}
+.step-content p {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.example-box {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  position: relative;
+}
+.example-tag {
+  display: inline-block;
+  padding: 6px 14px;
+  background: var(--coral-soft);
+  color: var(--coral);
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
+}
+.example-tag.teal { background: var(--teal-soft); color: var(--teal); }
+.example-tag.amber { background: var(--amber-soft); color: var(--amber); }
+.example-title {
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--fg);
+}
+.example-calc {
+  background: var(--bg);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 12px;
+}
+.calc-step {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--border);
+  font-size: 15px;
+}
+.calc-step:last-child { border-bottom: none; }
+.calc-step .label {
+  color: var(--fg-2);
+  font-weight: 500;
+}
+.calc-step .value {
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  color: var(--fg);
+  font-size: 17px;
+}
+.calc-step.highlight .value {
+  color: var(--coral);
+  font-size: 20px;
+}
+.calc-step.highlight.teal .value { color: var(--teal); }
+.calc-step.highlight.amber .value { color: var(--amber); }
+.example-result {
+  background: linear-gradient(135deg, var(--coral), var(--amber));
+  color: white;
+  padding: 18px 24px;
+  border-radius: 14px;
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.example-result.teal-grad {
+  background: linear-gradient(135deg, var(--teal), #14B8A6);
+}
+.example-result .lbl {
+  font-size: 13px;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+}
+.example-result .val {
+  font-family: 'Fraunces', serif;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+/* ========== SLIDE 9: KALKULATOR ========== */
+.calc-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  flex: 1;
+  align-content: start;
+}
+.calc-mode {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.mode-btn {
+  flex: 1;
+  padding: 16px 14px;
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fg);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+.mode-btn i {
+  font-size: 18px;
+  color: var(--muted);
+}
+.mode-btn:hover {
+  border-color: var(--coral);
+}
+.mode-btn.active {
+  background: var(--coral);
+  border-color: var(--coral);
+  color: white;
+}
+.mode-btn.active i { color: white; }
+
+.calc-form {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+.calc-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.input-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.input-group label i { color: var(--coral); }
+.input-group input,
+.input-group select {
+  padding: 14px 16px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--fg);
+  background: var(--bg);
+  transition: all 0.2s;
+  outline: none;
+}
+.input-group input:focus,
+.input-group select:focus {
+  border-color: var(--coral);
+  background: var(--card);
+}
+.input-group .suffix {
+  position: relative;
+}
+.input-group .suffix input {
+  padding-right: 60px;
+  width: 100%;
+}
+.input-group .suffix span {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.calc-result-panel {
+  background: linear-gradient(135deg, #2A1810, #4A2818);
+  color: white;
+  border-radius: var(--radius-lg);
+  padding: 36px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.calc-result-panel::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 90, 54, 0.2), transparent 60%);
+}
+.calc-result-label {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 12px;
+  position: relative;
+}
+.calc-result-value {
+  font-family: 'Fraunces', serif;
+  font-size: 64px;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 8px;
+  position: relative;
+  background: linear-gradient(135deg, #FFD89C, #FFA07A);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.calc-result-unit {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 24px;
+  position: relative;
+}
+.calc-detail {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 18px;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.calc-detail-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 10px;
+}
+.calc-detail-step {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 6px 0;
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+}
+.calc-detail-step span:last-child {
+  font-weight: 700;
+  color: white;
+}
+
+/* ========== SLIDE 10: LATIHAN SOAL ========== */
+.quiz-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  flex: 1;
+  min-height: 0;
+}
+.quiz-sidebar {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: fit-content;
+  position: sticky;
+  top: 0;
+}
+.quiz-score-card {
+  background: linear-gradient(135deg, var(--coral), var(--amber));
+  color: white;
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+}
+.quiz-score-card .label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.9;
+  margin-bottom: 6px;
+}
+.quiz-score-card .value {
+  font-family: 'Fraunces', serif;
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1;
+}
+.quiz-score-card .total {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.quiz-grid-num {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+.num-btn {
+  aspect-ratio: 1;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fg);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.num-btn:hover {
+  border-color: var(--coral);
+  color: var(--coral);
+}
+.num-btn.answered {
+  background: var(--teal-soft);
+  border-color: var(--teal);
+  color: var(--teal);
+}
+.num-btn.correct {
+  background: var(--green-soft);
+  border-color: var(--green);
+  color: var(--green);
+}
+.num-btn.wrong {
+  background: #FEE2E2;
+  border-color: var(--red);
+  color: var(--red);
+}
+.num-btn.current {
+  background: var(--coral);
+  border-color: var(--coral);
+  color: white;
+  transform: scale(1.05);
+}
+
+.quiz-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.quiz-action-btn {
+  padding: 12px;
+  border: 2px solid var(--border);
+  background: var(--card);
+  border-radius: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.quiz-action-btn:hover {
+  border-color: var(--coral);
+  color: var(--coral);
+}
+.quiz-action-btn.primary {
+  background: var(--coral);
+  border-color: var(--coral);
+  color: white;
+}
+.quiz-action-btn.primary:hover {
+  background: #FF6B47;
+  color: white;
+}
+
+.quiz-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+.quiz-content::-webkit-scrollbar { width: 6px; }
+.quiz-content::-webkit-scrollbar-track { background: var(--bg-2); border-radius: 3px; }
+.quiz-content::-webkit-scrollbar-thumb { background: var(--coral-soft); border-radius: 3px; }
+
+.quiz-section-title {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--fg);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 4px;
+}
+.quiz-section-title .badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 100px;
+}
+.quiz-section-title .badge.coral { background: var(--coral); }
+.quiz-section-title .badge.teal { background: var(--teal); }
+.quiz-section-title .badge.amber { background: var(--amber); }
+.quiz-section-title .badge.green { background: var(--green); }
+
+.question-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--coral);
+  transition: all 0.3s;
+}
+.question-card.correct {
+  border-left-color: var(--green);
+  background: linear-gradient(90deg, var(--green-soft) 0%, var(--card) 50%);
+}
+.question-card.wrong {
+  border-left-color: var(--red);
+  background: linear-gradient(90deg, #FEE2E2 0%, var(--card) 50%);
+}
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+.question-num {
+  font-family: 'Fraunces', serif;
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--coral);
+  flex-shrink: 0;
+}
+.question-text {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--fg);
+  font-weight: 500;
+  flex: 1;
+}
+.question-status {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.question-status.pending {
+  background: var(--bg-2);
+  color: var(--muted);
+}
+.question-status.correct {
+  background: var(--green-soft);
+  color: var(--green);
+}
+.question-status.wrong {
+  background: #FEE2E2;
+  color: var(--red);
+}
+
+.question-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 14px;
+}
+.question-options.single {
+  grid-template-columns: 1fr;
+}
+.option-btn {
+  padding: 12px 16px;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.option-btn:hover {
+  border-color: var(--coral);
+  background: var(--card);
+}
+.option-btn .opt-label {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.option-btn.selected {
+  background: var(--coral);
+  border-color: var(--coral);
+  color: white;
+}
+.option-btn.selected .opt-label {
+  background: white;
+  color: var(--coral);
+  border-color: white;
+}
+.option-btn.correct-answer {
+  background: var(--green-soft);
+  border-color: var(--green);
+  color: var(--green);
+}
+.option-btn.correct-answer .opt-label {
+  background: var(--green);
+  color: white;
+  border-color: var(--green);
+}
+.option-btn.wrong-answer {
+  background: #FEE2E2;
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.text-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--fg);
+  background: var(--bg);
+  outline: none;
+  transition: all 0.2s;
+  margin-top: 12px;
+}
+.text-input:focus {
+  border-color: var(--coral);
+  background: var(--card);
+}
+
+.explanation {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: var(--amber-soft);
+  border-radius: 10px;
+  border-left: 3px solid var(--amber);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--fg-2);
+  display: none;
+}
+.explanation.show { display: block; }
+.explanation strong {
+  color: var(--amber);
+  font-weight: 700;
+}
+
+/* ========== SLIDE 11: PENUTUP ========== */
+.closing {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 100px;
+}
+.closing-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--teal);
+  margin-bottom: 28px;
+}
+.closing h2 {
+  font-size: clamp(40px, 5vw, 72px);
+  margin-bottom: 24px;
+  max-width: 800px;
+}
+.closing h2 .accent {
+  color: var(--coral);
+  font-style: italic;
+}
+.closing p {
+  font-size: 20px;
+  max-width: 640px;
+  margin: 0 auto 40px;
+}
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto 40px;
+}
+.summary-item {
+  background: var(--card);
+  padding: 24px 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  text-align: center;
+}
+.summary-item i {
+  font-size: 28px;
+  margin-bottom: 12px;
+  display: block;
+}
+.summary-item:nth-child(1) i { color: var(--coral); }
+.summary-item:nth-child(2) i { color: var(--teal); }
+.summary-item:nth-child(3) i { color: var(--amber); }
+.summary-item h4 {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+.summary-item p {
+  font-size: 14px;
+  color: var(--fg-2);
+  margin: 0;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--fg);
+  color: white;
+  padding: 14px 24px;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+  z-index: 200;
+  opacity: 0;
+  transition: all 0.4s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.toast.success { background: var(--green); }
+.toast.error { background: var(--red); }
+.toast.info { background: var(--coral); }
+
+/* SVG peta styles */
+.kota {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.kota:hover circle {
+  r: 9;
+  filter: drop-shadow(0 4px 8px rgba(255, 90, 54, 0.4));
+}
+.kota.selected circle {
+  fill: var(--coral) !important;
+  filter: drop-shadow(0 4px 12px rgba(255, 90, 54, 0.6));
+}
+.kota text {
+  pointer-events: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .slide { padding: 60px 40px 90px; }
+  .konsep-grid, .step-layout, .calc-layout { grid-template-columns: 1fr; }
+  .peta-stage { grid-template-columns: 1fr; }
+  .quiz-layout { grid-template-columns: 1fr; }
+  .quiz-sidebar { position: static; }
+}
+@media (max-width: 768px) {
+  .slide { padding: 50px 24px 90px; }
+  .jenis-grid, .rumus-grid { grid-template-columns: 1fr; }
+  .question-options { grid-template-columns: 1fr; }
+  .summary-grid { grid-template-columns: 1fr; }
+  .cover-deco { display: none; }
+}
+
+/* Scrollbar */
+.slide::-webkit-scrollbar { width: 8px; }
+.slide::-webkit-scrollbar-track { background: transparent; }
+.slide::-webkit-scrollbar-thumb { background: var(--coral-soft); border-radius: 4px; }
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.pulse { animation: pulse 1s ease-in-out infinite; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar">
+  <div class="progress-fill" id="progressFill"></div>
+</div>
+
+<div class="deck" id="deck">
+
+  <!-- ========== SLIDE 1: COVER ========== -->
+  <section class="slide active" data-slide="1">
+    <div class="cover-content">
+      <div class="cover-badge">
+        <i class="fas fa-map-location-dot"></i>
+        Matematika SD-Geometri Pengukuran
+      </div>
+      <h1>
+        Skala:<br>
+        Memahami Dunia<br>
+        dalam <span class="accent">Genggaman</span>
+      </h1>
+      <p class="cover-subtitle">
+        Pelajari konsep skala melalui peta interaktif, kalkulator otomatis, 
+        dan 20 soal latihan yang akan menguji pemahamanmu.
+      </p>
+      <div class="cover-features">
+        <div class="cover-feature">
+          <i class="fas fa-map"></i>
+          <span>Peta Interaktif</span>
+        </div>
+        <div class="cover-feature">
+          <i class="fas fa-calculator"></i>
+          <span>Kalkulator Skala</span>
+        </div>
+        <div class="cover-feature">
+          <i class="fas fa-graduation-cap"></i>
+          <span>20 Soal Latihan</span>
+        </div>
+        <div class="cover-feature">
+          <i class="fas fa-compass"></i>
+          <span>3 Rumus Inti</span>
+        </div>
+      </div>
+      <div class="cover-cta">
+        <button class="btn-primary" onclick="nextSlide()">
+          Mulai Belajar
+          <i class="fas fa-arrow-right"></i>
+        </button>
+        <button class="btn-ghost" onclick="goToSlide(10)">
+          <i class="fas fa-list-ol"></i>
+          Langsung ke Soal
+        </button>
+      </div>
+    </div>
+    <div class="cover-deco">
+      <div class="deco-circle"></div>
+      <div class="deco-circle"></div>
+      <div class="deco-circle"></div>
+    </div>
+  </section>
+
+  <!-- ========== SLIDE 2: KONSEP SKALA ========== -->
+  <section class="slide" data-slide="2">
+    <div class="slide-header">
+      <div class="slide-num">Slide 02 — Konsep Dasar</div>
+      <div class="slide-tag">Pemahaman</div>
+    </div>
+    <h2>Apa itu <span class="highlight">Skala</span>?</h2>
+    <p class="lead" style="margin-bottom: 32px; max-width: 800px;">
+      Skala adalah perbandingan antara ukuran di peta (atau gambar) 
+      dengan ukuran sebenarnya di dunia nyata.
+    </p>
+    <div class="konsep-grid">
+      <div class="konsep-visual">
+        <div class="scale-demo">
+          <div class="scale-object">
+            <div class="obj obj-1"></div>
+            <div class="label">Objek Nyata</div>
+            <div class="sub">Ukuran sebenarnya</div>
+          </div>
+          <div class="scale-arrow">
+            <i class="fas fa-arrow-left"></i>
+            <span>Diperkecil</span>
+            <i class="fas fa-arrow-right"></i>
+          </div>
+          <div class="scale-object">
+            <div class="obj obj-2"></div>
+            <div class="label">Peta</div>
+            <div class="sub">Skala 1:2</div>
+          </div>
+          <div class="scale-object">
+            <div class="obj obj-3"></div>
+            <div class="label">Peta</div>
+            <div class="sub">Skala 1:4</div>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div class="card card-coral">
+          <h3 style="margin-bottom: 8px;"><i class="fas fa-info-circle" style="color: var(--coral);"></i> Definisi</h3>
+          <p style="font-size: 15px;">Skala = perbandingan jarak pada peta dengan jarak sebenarnya.</p>
+        </div>
+        <div class="card card-teal">
+          <h3 style="margin-bottom: 8px;"><i class="fas fa-ruler" style="color: var(--teal);"></i> Notasi</h3>
+          <p style="font-size: 15px;">Skala ditulis sebagai <strong>1 : n</strong>, di mana n adalah angka perbandingan.</p>
+          <p style="font-size: 14px; margin-top: 8px;">Contoh: <span class="teal-text">1 : 100.000</span> berarti 1 cm di peta = 100.000 cm di kebenaran.</p>
+        </div>
+        <div class="card card-amber">
+          <h3 style="margin-bottom: 8px;"><i class="fas fa-lightbulb" style="color: var(--amber);"></i> Konversi Penting</h3>
+          <p style="font-size: 14px;">• 1 km = 1.000 m = 100.000 cm<br>
+          • 1 m = 100 cm<br>
+          • Untuk dapat km, bagi cm dengan 100.000</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SLIDE 3: JENIS SKALA ========== -->
+  <section class="slide" data-slide="3">
+    <div class="slide-header">
+      <div class="slide-num">Slide 03 — Klasifikasi</div>
+      <div class="slide-tag">Jenis Skala</div>
+    </div>
+    <h2>Tiga <span class="highlight">Jenis Skala</span> pada Peta</h2>
+    <p class="lead" style="margin-bottom: 32px; max-width: 800px;">
+      Berdasarkan angka perbandingannya, skala dibagi menjadi tiga jenis. 
+      Semakin kecil angka, semakin detail petanya.
+    </p>
+    <div class="jenis-grid">
+      <div class="jenis-card besar">
+        <div class="jenis-icon"><i class="fas fa-search-plus"></i></div>
+        <h3>Skala Besar</h3>
+        <div class="jenis-scale">1 : 5.000 — 1 : 250.000</div>
+        <p class="jenis-detail">
+          Angka perbandingan kecil, area tergambar sangat detail. 
+          Cocok untuk peta kota, denah, atau peta lingkungan.
+        </p>
+        <div class="jenis-use">
+          <strong>Contoh Penggunaan</strong>
+          Peta kota, denah rumah, peta sekolah
+        </div>
+      </div>
+      <div class="jenis-card sedang">
+        <div class="jenis-icon"><i class="fas fa-map"></i></div>
+        <h3>Skala Sedang</h3>
+        <div class="jenis-scale">1 : 250.000 — 1 : 500.000</div>
+        <p class="jenis-detail">
+          Menampilkan area lebih luas dengan tingkat detail menengah. 
+          Biasa digunakan untuk peta kabupaten atau provinsi.
+        </p>
+        <div class="jenis-use">
+          <strong>Contoh Penggunaan</strong>
+          Peta kabupaten, peta provinsi
+        </div>
+      </div>
+      <div class="jenis-card kecil">
+        <div class="jenis-icon"><i class="fas fa-globe-asia"></i></div>
+        <h3>Skala Kecil</h3>
+        <div class="jenis-scale">1 : 500.000+</div>
+        <p class="jenis-detail">
+          Angka perbandingan besar, area sangat luas tapi kurang detail. 
+          Cocok untuk peta negara, benua, atau dunia.
+        </p>
+        <div class="jenis-use">
+          <strong>Contoh Penggunaan</strong>
+          Peta negara, peta benua, peta dunia
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SLIDE 4: PETA INTERAKTIF ========== -->
+  <section class="slide" data-slide="4">
+    <div class="slide-header">
+      <div class="slide-num">Slide 04 — Eksplorasi</div>
+      <div class="slide-tag">Peta Interaktif</div>
+    </div>
+    <h2>Eksplorasi <span class="highlight">Skala</span> di Peta Nyata</h2>
+    <p class="lead" style="margin-bottom: 20px; max-width: 800px;">
+      Klik dua kota untuk mengukur jarak, lalu ubah skala untuk melihat bagaimana jarak sebenarnya berubah.
+    </p>
+    <div class="peta-stage">
+      <div class="peta-container">
+        <div class="peta-wrap">
+          <svg id="petaSvg" viewBox="0 0 600 380" xmlns="http://www.w3.org/2000/svg">
+            <!-- Laut / background -->
+            <rect width="600" height="380" fill="#E0F2FE" opacity="0.3"/>
+            
+            <!-- Pulau utama -->
+            <path d="M 80 180 Q 100 100, 180 90 Q 250 70, 320 100 Q 400 80, 460 130 Q 510 170, 500 230 Q 480 290, 420 310 Q 350 330, 280 310 Q 200 320, 140 290 Q 80 270, 80 180 Z" 
+                  fill="#FFE4B8" stroke="#D4A574" stroke-width="2"/>
+            
+            <!-- Pulau kecil -->
+            <ellipse cx="510" cy="80" rx="35" ry="20" fill="#FFE4B8" stroke="#D4A574" stroke-width="2"/>
+            
+            <!-- Gunung -->
+            <path d="M 220 160 L 240 130 L 260 160 Z" fill="#A78BFA" opacity="0.4"/>
+            <path d="M 350 220 L 380 180 L 410 220 Z" fill="#A78BFA" opacity="0.4"/>
+            
+            <!-- Sungai -->
+            <path d="M 240 140 Q 250 200, 280 220 Q 310 240, 340 250" 
+                  fill="none" stroke="#7DD3FC" stroke-width="3" opacity="0.6"/>
+            
+            <!-- Jalan antar kota -->
+            <path d="M 150 170 Q 200 150, 270 175 Q 320 195, 380 180 Q 420 170, 440 200" 
+                  fill="none" stroke="#FFFFFF" stroke-width="3" stroke-dasharray="4,3" opacity="0.8"/>
+            <path d="M 270 175 Q 280 230, 250 280" 
+                  fill="none" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="4,3" opacity="0.8"/>
+            
+            <!-- Kota-kota -->
+            <g class="kota" data-name="Bandar Mas" data-x="150" data-y="170">
+              <circle cx="150" cy="170" r="7" fill="#0D9488"/>
+              <circle cx="150" cy="170" r="3" fill="white"/>
+              <text x="160" y="166">Bandar Mas</text>
+            </g>
+            <g class="kota" data-name="Sungai Jaya" data-x="270" data-y="175">
+              <circle cx="270" cy="175" r="7" fill="#0D9488"/>
+              <circle cx="270" cy="175" r="3" fill="white"/>
+              <text x="280" y="171">Sungai Jaya</text>
+            </g>
+            <g class="kota" data-name="Gunung Sari" data-x="380" data-y="180">
+              <circle cx="380" cy="180" r="7" fill="#0D9488"/>
+              <circle cx="380" cy="180" r="3" fill="white"/>
+              <text x="390" y="176">Gunung Sari</text>
+            </g>
+            <g class="kota" data-name="Pantai Indah" data-x="440" data-y="200">
+              <circle cx="440" cy="200" r="7" fill="#0D9488"/>
+              <circle cx="440" cy="200" r="3" fill="white"/>
+              <text x="430" y="220" text-anchor="end">Pantai Indah</text>
+            </g>
+            <g class="kota" data-name="Bukit Harapan" data-x="250" data-y="280">
+              <circle cx="250" cy="280" r="7" fill="#0D9488"/>
+              <circle cx="250" cy="280" r="3" fill="white"/>
+              <text x="260" y="296">Bukit Harapan</text>
+            </g>
+            
+            <!-- Garis pengukur -->
+            <line id="ukurLine" x1="0" y1="0" x2="0" y2="0" 
+                  stroke="#FF5A36" stroke-width="3" stroke-dasharray="6,4" 
+                  style="display:none"/>
+            <circle id="ukurDot1" cx="0" cy="0" r="5" fill="#FF5A36" style="display:none"/>
+            <circle id="ukurDot2" cx="0" cy="0" r="5" fill="#FF5A36" style="display:none"/>
+            <text id="ukurLabel" x="0" y="0" font-family="Plus Jakarta Sans" 
+                  font-weight="700" font-size="13" fill="#FF5A36" text-anchor="middle" style="display:none"></text>
+          </svg>
+          <div class="peta-overlay">
+            <i class="fas fa-map-pin"></i>
+            <span id="petaOverlayText">Klik 2 kota untuk mengukur</span>
+          </div>
+          <div class="scale-bar-vis">
+            <div class="bar"></div>
+            <span id="scaleBarText">1 cm = 1 km</span>
+          </div>
+        </div>
+      </div>
+      <div class="peta-panel">
+        <div class="peta-info-card">
+          <h4><i class="fas fa-sliders"></i> Pilih Skala</h4>
+          <div class="scale-control">
+            <label>Skala Peta</label>
+            <div class="scale-buttons">
+              <button class="scale-btn" data-scale="50000">1:50K</button>
+              <button class="scale-btn active" data-scale="100000">1:100K</button>
+              <button class="scale-btn" data-scale="250000">1:250K</button>
+              <button class="scale-btn" data-scale="500000">1:500K</button>
+              <button class="scale-btn" data-scale="1000000">1:1M</button>
+              <button class="scale-btn" data-scale="2000000">1:2M</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="measurement-display empty" id="measDisplay">
+          <div class="label">Jarak Sebenarnya</div>
+          <div class="value">—</div>
+          <div class="unit">pilih dua kota</div>
+        </div>
+        
+        <div class="measurement-detail" id="measDetail" style="display:none;">
+          <div class="meas-item">
+            <div class="lbl">Jarak di Peta</div>
+            <div class="val" id="jarakPetaVal">—</div>
+          </div>
+          <div class="meas-item">
+            <div class="lbl">Skala</div>
+            <div class="val" id="skalaVal">—</div>
+          </div>
+        </div>
+        
+        <div class="peta-instruction">
+          <strong><i class="fas fa-info-circle"></i> Cara Pakai:</strong>
+          Pilih skala, lalu klik 2 kota pada peta. Sistem akan menghitung jarak otomatis.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SLIDE 5: RUMUS ========== -->
+  <section class="slide" data-slide="5">
+    <div class="slide-header">
+      <div class="slide-num">Slide 05 — Inti Materi</div>
+      <div class="slide-tag">Tiga Rumus</div>
+    </div>
+    <h2>Tiga <span class="highlight">Rumus Skala</span> Wajib Tahu</h2>
+    <p class="lead" style="margin-bottom: 32px; max-width: 800px;">
+      Dari satu rumus dasar, kita bisa memperoleh tiga bentuk rumus turunan 
+      untuk menyelesaikan berbagai soal skala.
+    </p>
+    <div class="rumus-grid">
+      <div class="rumus-card">
+        <div class="rumus-num">1</div>
+        <h3>Mencari Skala</h3>
+        <div class="rumus-formula">
+          Skala = 
+          <span class="frac">
+            <span>jarak peta</span>
+            <span>jarak sebenarnya</span>
+          </span>
+        </div>
+        <p class="rumus-detail">
+          Digunakan ketika diketahui <strong>jarak di peta</strong> dan 
+          <strong>jarak sebenarnya</strong>, lalu kita cari nilai skalanya.
+        </p>
+      </div>
+      <div class="rumus-card">
+        <div class="rumus-num">2</div>
+        <h3>Mencari Jarak Sebenarnya</h3>
+        <div class="rumus-formula">
+          Jarak Sebenarnya = jarak peta × skala
+        </div>
+        <p class="rumus-detail">
+          Digunakan ketika diketahui <strong>jarak di peta</strong> dan 
+          <strong>skala</strong>, lalu kita cari <strong>jarak sebenarnya</strong>.
+        </p>
+      </div>
+      <div class="rumus-card">
+        <div class="rumus-num">3</div>
+        <h3>Mencari Jarak di Peta</h3>
+        <div class="rumus-formula">
+          Jarak Peta = 
+          <span class="frac">
+            <span>jarak sebenarnya</span>
+            <span>skala</span>
+          </span>
+        </div>
+        <p class="rumus-detail">
+          Digunakan ketika diketahui <strong>jarak sebenarnya</strong> dan 
+          <strong>skala</strong>, lalu kita cari <strong>jarak pada peta</strong>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SLIDE 6: MENCARI SKALA ========== -->
+  <section class="slide" data-slide="6">
+    <div class="slide-header">
+      <div class="slide-num">Slide 06 — Aplikasi 1</div>
+      <div class="slide-tag">Mencari Skala</div>
+    </div>
+    <h2>Cara <span class="highlight">Mencari Skala</span></h2>
+    <p class="lead" style="margin-bottom: 24px; max-width: 800px;">
+      Ikuti langkah-langkah berikut untuk menentukan skala ketika jarak peta dan jarak sebenarnya diketahui.
+    </p>
+    <div class="step-layout">
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Tulis Data yang Diketahui</h4>
+            <p>Catat jarak pada peta (cm) dan jarak sebenarnya. Pastikan satuannya sama, biasanya dalam cm.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Konversi Satuan</h4>
+            <p>Ubah jarak sebenarnya ke sentimeter. Ingat: 1 km = 100.000 cm dan 1 m = 100 cm.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Terapkan Rumus</h4>
+            <p>Bagi jarak peta dengan jarak sebenarnya untuk mendapatkan angka perbandingan skala.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h4>Sederhanakan ke Bentuk 1 : n</h4>
+            <p>Tulis hasilnya dalam bentuk "1 : n". Misal 6 : 300.000 menjadi 1 : 50.000.</p>
+          </div>
+        </div>
+      </div>
+      <div class="example-box">
+        <div class="example-tag">Contoh Soal</div>
+        <div class="example-title">Menentukan Skala dari Dua Kota</div>
+        <p style="font-size: 15px; margin-bottom: 16px;">
+          Jarak Kota A dan Kota B pada peta adalah <strong>6 cm</strong>. 
+          Jarak sebenarnya adalah <strong>3 km</strong>. Berapa skalanya?
+        </p>
+        <div class="example-calc">
+          <div class="calc-step">
+            <span class="label">Diketahui</span>
+            <span class="value">peta = 6 cm</span>
+          </div>
+          <div class="calc-step">
+            <span class="label">Jarak sebenarnya</span>
+            <span class="value">3 km = 300.000 cm</span>
+          </div>
+          <div class="calc-step highlight">
+            <span class="label">Skala</span>
+            <span class="value">6 : 300.000</span>
+          </div>
+          <div class="calc-step highlight teal">
+            <span class="label">Disederhanakan</span>
+            <span class="value">1 : 50.000</span>
+          </div>
+        </div>
+        <div class="example-result teal-grad">
+          <span class="lbl">Skala Peta</span>
+          <span class="val">1 : 50.000</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SLIDE 7: JARAK SEBENARNYA ========== -->
+  <section class="slide" data-slide="7">
+    <div class="slide-header">
+      <div class="slide-num">Slide 07 — Aplikasi 2</div>
+      <div class="slide-tag">Jarak Sebenarnya</div>
+    </div>
+    <h2>Cara Mencari <span class="highlight">Jarak Sebenarnya</span></h2>
+    <p class="lead" style="margin-bottom: 24px; max-width: 800px;">
+      Ketika skala dan jarak pada peta diketahui, kita bisa menemukan jarak sesungguhnya di lapangan.
+    </p>
+    <div class="step-layout">
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Catat Jarak di Peta</h4>
+            <p>Tuliskan berapa cm jarak antara dua titik di peta. Pastikan dalam satuan cm.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Identifikasi Skala</h4>
+            <p>Periksa skala peta. Misalnya 1 : 100.000, artinya 1 cm di peta = 100.000 cm sebenarnya.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Kalikan</h4>
+            <p>Hitung: jarak peta (cm) × skala = jarak sebenarnya (cm).</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h4>Konversi ke km/m</h4>
+            <p>Bagi dengan 100.000 untuk mendapatkan km, atau dengan 100 untuk mendapatkan m.</p>
+          </div>
+        </div>
+      </div>
+      <div class="example-box">
+        <div class="example-tag teal">Contoh Soal</div>
+        <div class="example-title">Menghitung Jarak Antarkota</div>
+        <p style="font-size: 15px; margin-bottom: 16px;">
+          Peta berskala <strong>1 : 250.000</strong>. Jarak Kota P dan Kota Q pada peta adalah 
+          <strong>8 cm</strong>. Berapa jarak sebenarnya dalam km?
+        </p>
+        <div class="example-calc">
+          <div class="calc-step">
+            <span class="label">Diketahui</span>
+            <span class="value">peta = 8 cm</span>
+          </div>
+          <div class="calc-step">
+            <span class="label">Skala</span>
+            <span class="value">1 : 250.000</span>
+          </div>
+          <div class="calc-step highlight">
+            <span class="label">Jarak Sebenarnya</span>
+            <span class="value">8 × 250.000 = 2.000.000 cm</span>
+          </div>
+          <div class="calc-step highlight teal">
+            <span class="label">Konversi ke km</span>
+            <span class="value">2.000.000 ÷ 100.000 = 20 km</span>
+          </div>
+        </div>
+        <div class="example-result">
+          <span class="lbl">Jarak Sebenarnya</span>
+          <span class="val">20 km</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SLIDE 8: JARAK PADA PETA ========== -->
+  <section class="slide" data-slide="8">
+    <div class="slide-header">
+      <div class="slide-num">Slide 08 — Aplikasi 3</div>
+      <div class="slide-tag">Jarak pada Peta</div>
+    </div>
+    <h2>Cara Mencari <span class="highlight">Jarak pada Peta</span></h2>
+    <p class="lead" style="margin-bottom: 24px; max-width: 800px;">
+      Dengan mengetahui jarak sebenarnya dan skala, kita dapat menentukan seberapa besar jarak itu tampak di peta.
+    </p>
+    <div class="step-layout">
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Tulis Jarak Sebenarnya</h4>
+            <p>Catat jarak antara dua tempat di dunia nyata, lalu konversi ke sentimeter.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Identifikasi Skala</h4>
+            <p>Periksa nilai skala pada peta. Angka skala akan menjadi pembagi.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Bagi</h4>
+            <p>Hitung: jarak sebenarnya (cm) ÷ skala = jarak pada peta (cm).</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h4>Verifikasi Hasil</h4>
+            <p>Pastikan hasilnya logis. Jika jaraknya besar, hasil pada peta juga seharusnya relatif besar.</p>
+          </div>
+        </div>
+      </div>
+      <div class="example-box">
+        <div class="example-tag amber">Contoh Soal</div>
+        <div class="example-title">Menghitung Jarak pada Peta</div>
+        <p style="font-size: 15px; margin-bottom: 16px;">
+          Jarak sebenarnya antara Kota M dan Kota N adalah <strong>50 km</strong>. 
+          Peta menggunakan skala <strong>1 : 200.000</strong>. Berapa jarak M-N pada peta?
+        </p>
+        <div class="example-calc">
+          <div class="calc-step">
+            <span class="label">Diketahui</span>
+            <span class="value">50 km = 5.000.000 cm</span>
+          </div>
+          <div class="calc-step">
+            <span class="label">Skala</span>
+            <span class="value">1 : 200.000</span>
+          </div>
+          <div class="calc-step highlight">
+            <span class="label">Jarak pada Peta</span>
+            <span class="value">5.000.000 ÷ 200.000</span>
+          </div>
+          <div class="calc-step highlight teal">
+            <span class="label">Hasil</span>
+            <span class="value">25 cm</span>
+          </div>
+        </div>
+        <div class="example-result">
+          <span class="lbl">Jarak pada Peta</span>
+          <span class="val">25 cm</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SLIDE 9: KALKULATOR ========== -->
+  <section class="slide" data-slide="9">
+    <div class="slide-header">
+      <div class="slide-num">Slide 09 — Alat Bantu</div>
+      <div class="slide-tag">Kalkulator Skala</div>
+    </div>
+    <h2>Kalkulator <span class="highlight">Skala Otomatis</span></h2>
+    <p class="lead" style="margin-bottom: 24px; max-width: 800px;">
+      Pilih mode perhitungan, masukkan data yang diketahui, dan biarkan kalkulator menyelesaikannya untukmu.
+    </p>
+    <div class="calc-layout">
+      <div class="calc-form">
+        <div class="calc-mode">
+          <button class="mode-btn active" data-mode="skala">
+            <i class="fas fa-ruler"></i>
+            Cari Skala
+          </button>
+          <button class="mode-btn" data-mode="sebenarnya">
+            <i class="fas fa-road"></i>
+            Cari Jarak Sebenarnya
+          </button>
+          <button class="mode-btn" data-mode="peta">
+            <i class="fas fa-map"></i>
+            Cari Jarak Peta
+          </button>
+        </div>
+        <div class="calc-inputs" id="calcInputs">
+          <!-- Dynamic inputs -->
+        </div>
+      </div>
+      <div class="calc-result-panel">
+        <div class="calc-result-label">Hasil Perhitungan</div>
+        <div class="calc-result-value" id="calcResultValue">—</div>
+        <div class="calc-result-unit" id="calcResultUnit">masukkan nilai untuk mulai</div>
+        <div class="calc-detail" id="calcDetail" style="display:none;">
+          <div class="calc-detail-title">Langkah Perhitungan</div>
+          <div id="calcDetailContent"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SLIDE 10: LATIHAN SOAL ========== -->
+  <section class="slide" data-slide="10">
+    <div class="slide-header">
+      <div class="slide-num">Slide 10 — Evaluasi</div>
+      <div class="slide-tag">20 Soal Latihan</div>
+    </div>
+    <h2>Latihan <span class="highlight">20 Soal Skala</span></h2>
+    <p class="lead" style="margin-bottom: 20px; max-width: 800px;">
+      Kerjakan soal-soal berikut. Setiap soal memiliki feedback langsung dan penjelasan jawaban.
+    </p>
+    <div class="quiz-layout">
+      <div class="quiz-sidebar">
+        <div class="quiz-score-card">
+          <div class="label">Skor Kamu</div>
+          <div class="value" id="scoreValue">0</div>
+          <div class="total">dari 20</div>
+        </div>
+        <div class="quiz-grid-num" id="quizGridNum">
+          <!-- 20 number buttons -->
+        </div>
+        <div class="quiz-actions">
+          <button class="quiz-action-btn primary" onclick="checkAllAnswers()">
+            <i class="fas fa-check-circle"></i> Cek Semua Jawaban
+          </button>
+          <button class="quiz-action-btn" onclick="resetQuiz()">
+            <i class="fas fa-rotate-left"></i> Reset Jawaban
+          </button>
+        </div>
+      </div>
+      <div class="quiz-content" id="quizContent">
+        <!-- Questions generated by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SLIDE 11: PENUTUP ========== -->
+  <section class="slide" data-slide="11">
+    <div class="closing">
+      <div class="closing-badge">
+        <i class="fas fa-flag-checkered"></i>
+        Akhir Presentasi
+      </div>
+      <h2>Selamat! Kamu telah <span class="accent">menamatkan</span> materi skala</h2>
+      <p>
+        Kamu telah mempelajari konsep, rumus, dan aplikasi skala. 
+        Teruslah berlatih dengan berbagai variasi soal untuk memperkuat pemahamanmu.
+      </p>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <i class="fas fa-info"></i>
+          <h4>Konsep</h4>
+          <p>Skala = jarak peta : jarak sebenarnya</p>
+        </div>
+        <div class="summary-item">
+          <i class="fas fa-calculator"></i>
+          <h4>Tiga Rumus</h4>
+          <p>Skala, jarak sebenarnya, jarak peta</p>
+        </div>
+        <div class="summary-item">
+          <i class="fas fa-trophy"></i>
+          <h4>Skor Akhir</h4>
+          <p id="finalScore">Kerjakan latihan dulu</p>
+        </div>
+      </div>
+      <div class="cover-cta" style="justify-content: center;">
+        <button class="btn-primary" onclick="goToSlide(0)">
+          <i class="fas fa-rotate-left"></i>
+          Ulangi dari Awal
+        </button>
+        <button class="btn-ghost" onclick="goToSlide(9)">
+          <i class="fas fa-calculator"></i>
+          Buka Kalkulator
+        </button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Navigation -->
+<nav class="nav">
+  <button class="nav-btn secondary" id="prevBtn" onclick="prevSlide()">
+    <i class="fas fa-arrow-left"></i> Sebelumnya
+  </button>
+  <div class="indicators" id="indicators"></div>
+  <button class="nav-btn" id="nextBtn" onclick="nextSlide()">
+    Selanjutnya <i class="fas fa-arrow-right"></i>
+  </button>
+</nav>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ NAVIGATION ============ */
+const totalSlides = 11;
+let currentSlide = 0;
+
+const indicators = document.getElementById('indicators');
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('div');
+  dot.className = 'dot' + (i === 0 ? ' active' : '');
+  dot.onclick = () => goToSlide(i);
+  indicators.appendChild(dot);
+}
+
+function goToSlide(index) {
+  if (index < 0 || index >= totalSlides) return;
+  document.querySelectorAll('.slide').forEach((s, i) => {
+    s.classList.toggle('active', i === index);
+  });
+  document.querySelectorAll('.dot').forEach((d, i) => {
+    d.classList.toggle('active', i === index);
+  });
+  currentSlide = index;
+  document.getElementById('progressFill').style.width = ((index + 1) / totalSlides * 100) + '%';
+  document.getElementById('prevBtn').disabled = index === 0;
+  document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+  
+  // Update final score if on closing slide
+  if (index === 10) {
+    const score = calculateScore();
+    document.getElementById('finalScore').textContent = score + ' / 20 benar';
+  }
+}
+
+function nextSlide() { goToSlide(currentSlide + 1); }
+function prevSlide() { goToSlide(currentSlide - 1); }
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+  if (e.key === 'ArrowLeft') prevSlide();
+});
+
+/* ============ PETA INTERAKTIF ============ */
+let currentScale = 100000;
+let selectedKota = [];
+const PIXEL_PER_CM = 50; // 50 piksel SVG = 1 cm pada peta
+
+const kotaData = [
+  { name: 'Bandar Mas', x: 150, y: 170 },
+  { name: 'Sungai Jaya', x: 270, y: 175 },
+  { name: 'Gunung Sari', x: 380, y: 180 },
+  { name: 'Pantai Indah', x: 440, y: 200 },
+  { name: 'Bukit Harapan', x: 250, y: 280 }
+];
+
+document.querySelectorAll('.scale-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentScale = parseInt(btn.dataset.scale);
+    updateScaleBar();
+    if (selectedKota.length === 2) {
+      updateMeasurement();
+    }
+  });
+});
+
+document.querySelectorAll('.kota').forEach(kota => {
+  kota.addEventListener('click', () => {
+    const name = kota.dataset.name;
+    const x = parseFloat(kota.dataset.x);
+    const y = parseFloat(kota.dataset.y);
+    
+    // Toggle selection
+    const existingIdx = selectedKota.findIndex(k => k.name === name);
+    if (existingIdx !== -1) {
+      selectedKota.splice(existingIdx, 1);
+      kota.classList.remove('selected');
+    } else {
+      if (selectedKota.length >= 2) {
+        // Remove first
+        const first = selectedKota.shift();
+        document.querySelectorAll('.kota').forEach(k => {
+          if (k.dataset.name === first.name) k.classList.remove('selected');
+        });
+      }
+      selectedKota.push({ name, x, y });
+      kota.classList.add('selected');
+    }
+    
+    if (selectedKota.length === 2) {
+      drawMeasurementLine();
+      updateMeasurement();
+    } else if (selectedKota.length === 1) {
+      document.getElementById('ukurLine').style.display = 'none';
+      document.getElementById('ukurDot1').style.display = 'none';
+      document.getElementById('ukurDot2').style.display = 'none';
+      document.getElementById('ukurLabel').style.display = 'none';
+      document.getElementById('measDisplay').classList.add('empty');
+      document.getElementById('measDisplay').innerHTML = `
+        <div class="label">Jarak Sebenarnya</div>
+        <div class="value">—</div>
+        <div class="unit">pilih satu kota lagi</div>
+      `;
+      document.getElementById('measDetail').style.display = 'none';
+      document.getElementById('petaOverlayText').textContent = 'Pilih 1 kota lagi';
+    } else {
+      resetMeasurement();
+    }
+  });
+});
+
+function drawMeasurementLine() {
+  const k1 = selectedKota[0];
+  const k2 = selectedKota[1];
+  const line = document.getElementById('ukurLine');
+  const dot1 = document.getElementById('ukurDot1');
+  const dot2 = document.getElementById('ukurDot2');
+  const label = document.getElementById('ukurLabel');
+  
+  line.setAttribute('x1', k1.x);
+  line.setAttribute('y1', k1.y);
+  line.setAttribute('x2', k2.x);
+  line.setAttribute('y2', k2.y);
+  line.style.display = 'block';
+  
+  dot1.setAttribute('cx', k1.x);
+  dot1.setAttribute('cy', k1.y);
+  dot1.style.display = 'block';
+  
+  dot2.setAttribute('cx', k2.x);
+  dot2.setAttribute('cy', k2.y);
+  dot2.style.display = 'block';
+  
+  const midX = (k1.x + k2.x) / 2;
+  const midY = (k1.y + k2.y) / 2 - 12;
+  label.setAttribute('x', midX);
+  label.setAttribute('y', midY);
+  label.style.display = 'block';
+}
+
+function updateMeasurement() {
+  if (selectedKota.length !== 2) return;
+  const k1 = selectedKota[0];
+  const k2 = selectedKota[1];
+  const dx = k2.x - k1.x;
+  const dy = k2.y - k1.y;
+  const pixelDist = Math.sqrt(dx * dx + dy * dy);
+  const jarakPetaCm = pixelDist / PIXEL_PER_CM;
+  const jarakSebenarnyaCm = jarakPetaCm * currentScale;
+  const jarakSebenarnyaKm = jarakSebenarnyaCm / 100000;
+  
+  // Update label
+  document.getElementById('ukurLabel').textContent = `${jarakSebenarnyaKm.toFixed(2)} km`;
+  
+  // Update display
+  const display = document.getElementById('measDisplay');
+  display.classList.remove('empty');
+  display.innerHTML = `
+    <div class="label">Jarak Sebenarnya</div>
+    <div class="value">${jarakSebenarnyaKm.toFixed(2)}</div>
+    <div class="unit">kilometer</div>
+  `;
+  
+  // Update detail
+  document.getElementById('measDetail').style.display = 'grid';
+  document.getElementById('jarakPetaVal').textContent = jarakPetaCm.toFixed(2) + ' cm';
+  document.getElementById('skalaVal').textContent = '1:' + currentScale.toLocaleString('id-ID');
+  
+  document.getElementById('petaOverlayText').textContent = `${k1.name} → ${k2.name}`;
+}
+
+function updateScaleBar() {
+  const kmPerCm = currentScale / 100000;
+  let text;
+  if (kmPerCm >= 1) {
+    text = `1 cm = ${kmPerCm.toLocaleString('id-ID')} km`;
+  } else {
+    const mPerCm = currentScale / 100;
+    text = `1 cm = ${mPerCm.toLocaleString('id-ID')} m`;
+  }
+  document.getElementById('scaleBarText').textContent = text;
+}
+
+function resetMeasurement() {
+  selectedKota = [];
+  document.querySelectorAll('.kota').forEach(k => k.classList.remove('selected'));
+  document.getElementById('ukurLine').style.display = 'none';
+  document.getElementById('ukurDot1').style.display = 'none';
+  document.getElementById('ukurDot2').style.display = 'none';
+  document.getElementById('ukurLabel').style.display = 'none';
+  document.getElementById('measDisplay').classList.add('empty');
+  document.getElementById('measDisplay').innerHTML = `
+    <div class="label">Jarak Sebenarnya</div>
+    <div class="value">—</div>
+    <div class="unit">pilih dua kota</div>
+  `;
+  document.getElementById('measDetail').style.display = 'none';
+  document.getElementById('petaOverlayText').textContent = 'Klik 2 kota untuk mengukur';
+}
+
+/* ============ KALKULATOR ============ */
+let calcMode = 'skala';
+
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    calcMode = btn.dataset.mode;
+    renderCalcInputs();
+    calculateResult();
+  });
+});
+
+function renderCalcInputs() {
+  const container = document.getElementById('calcInputs');
+  let html = '';
+  
+  if (calcMode === 'skala') {
+    html = `
+      <div class="input-group">
+        <label><i class="fas fa-map"></i> Jarak pada Peta</label>
+        <div class="suffix"><input type="number" id="calcPeta" placeholder="contoh: 6" oninput="calculateResult()"><span>cm</span></div>
+      </div>
+      <div class="input-group">
+        <label><i class="fas fa-road"></i> Jarak Sebenarnya</label>
+        <div class="suffix"><input type="number" id="calcSebenarnyaVal" placeholder="contoh: 3" oninput="calculateResult()"></div>
+      </div>
+      <div class="input-group">
+        <label><i class="fas fa-ruler"></i> Satuan Jarak Sebenarnya</label>
+        <select id="calcSatuan" onchange="calculateResult()">
+          <option value="cm">cm</option>
+          <option value="m">m</option>
+          <option value="km" selected>km</option>
+        </select>
+      </div>
+    `;
+  } else if (calcMode === 'sebenarnya') {
+    html = `
+      <div class="input-group">
+        <label><i class="fas fa-map"></i> Jarak pada Peta</label>
+        <div class="suffix"><input type="number" id="calcPeta" placeholder="contoh: 8" oninput="calculateResult()"><span>cm</span></div>
+      </div>
+      <div class="input-group">
+        <label><i class="fas fa-ruler"></i> Skala (1 : n)</label>
+        <div class="suffix"><input type="number" id="calcSkala" placeholder="contoh: 250000" oninput="calculateResult()"><span>n</span></div>
+      </div>
+      <div class="input-group">
+        <label><i class="fas fa-ruler"></i> Tampilkan Hasil Dalam</label>
+        <select id="calcOutputSatuan" onchange="calculateResult()">
+          <option value="cm">cm</option>
+          <option value="m">m</option>
+          <option value="km" selected>km</option>
+        </select>
+      </div>
+    `;
+  } else if (calcMode === 'peta') {
+    html = `
+      <div class="input-group">
+        <label><i class="fas fa-road"></i> Jarak Sebenarnya</label>
+        <div class="suffix"><input type="number" id="calcSebenarnyaVal" placeholder="contoh: 50" oninput="calculateResult()"></div>
+      </div>
+      <div class="input-group">
+        <label><i class="fas fa-ruler"></i> Satuan Jarak Sebenarnya</label>
+        <select id="calcSatuan" onchange="calculateResult()">
+          <option value="cm">cm</option>
+          <option value="m">m</option>
+          <option value="km" selected>km</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label><i class="fas fa-ruler"></i> Skala (1 : n)</label>
+        <div class="suffix"><input type="number" id="calcSkala" placeholder="contoh: 200000" oninput="calculateResult()"><span>n</span></div>
+      </div>
+    `;
+  }
+  
+  container.innerHTML = html;
+}
+
+function calculateResult() {
+  const valueEl = document.getElementById('calcResultValue');
+  const unitEl = document.getElementById('calcResultUnit');
+  const detailEl = document.getElementById('calcDetail');
+  const detailContent = document.getElementById('calcDetailContent');
+  
+  if (calcMode === 'skala') {
+    const peta = parseFloat(document.getElementById('calcPeta')?.value);
+    const sebenarnya = parseFloat(document.getElementById('calcSebenarnyaVal')?.value);
+    const satuan = document.getElementById('calcSatuan')?.value;
+    
+    if (!peta || !sebenarnya || peta <= 0 || sebenarnya <= 0) {
+      valueEl.textContent = '—';
+      unitEl.textContent = 'lengkapi semua kolom';
+      detailEl.style.display = 'none';
+      return;
+    }
+    
+    let sebenarnyaCm = sebenarnya;
+    let satuanLabel = satuan;
+    if (satuan === 'm') sebenarnyaCm = sebenarnya * 100;
+    if (satuan === 'km') sebenarnyaCm = sebenarnya * 100000;
+    
+    const skala = sebenarnyaCm / peta;
+    
+    valueEl.textContent = '1 : ' + Math.round(skala).toLocaleString('id-ID');
+    unitEl.textContent = 'skala peta';
+    
+    detailEl.style.display = 'block';
+    detailContent.innerHTML = `
+      <div class="calc-detail-step"><span>Jarak peta</span><span>${peta} cm</span></div>
+      <div class="calc-detail-step"><span>Jarak sebenarnya</span><span>${sebenarnya} ${satuan}</span></div>
+      <div class="calc-detail-step"><span>Konversi ke cm</span><span>${sebenarnyaCm.toLocaleString('id-ID')} cm</span></div>
+      <div class="calc-detail-step"><span>Skala = sebenarnya ÷ peta</span><span>${Math.round(skala).toLocaleString('id-ID')}</span></div>
+    `;
+  } else if (calcMode === 'sebenarnya') {
+    const peta = parseFloat(document.getElementById('calcPeta')?.value);
+    const skala = parseFloat(document.getElementById('calcSkala')?.value);
+    const outSatuan = document.getElementById('calcOutputSatuan')?.value;
+    
+    if (!peta || !skala || peta <= 0 || skala <= 0) {
+      valueEl.textContent = '—';
+      unitEl.textContent = 'lengkapi semua kolom';
+      detailEl.style.display = 'none';
+      return;
+    }
+    
+    const sebenarnyaCm = peta * skala;
+    let result, unitText;
+    
+    if (outSatuan === 'cm') {
+      result = sebenarnyaCm;
+      unitText = 'cm';
+    } else if (outSatuan === 'm') {
+      result = sebenarnyaCm / 100;
+      unitText = 'm';
+    } else {
+      result = sebenarnyaCm / 100000;
+      unitText = 'km';
+    }
+    
+    valueEl.textContent = result.toLocaleString('id-ID', {maximumFractionDigits: 2});
+    unitEl.textContent = unitText;
+    
+    detailEl.style.display = 'block';
+    detailContent.innerHTML = `
+      <div class="calc-detail-step"><span>Jarak peta</span><span>${peta} cm</span></div>
+      <div class="calc-detail-step"><span>Skala</span><span>1 : ${skala.toLocaleString('id-ID')}</span></div>
+      <div class="calc-detail-step"><span>Sebenarnya (cm)</span><span>${sebenarnyaCm.toLocaleString('id-ID')} cm</span></div>
+      <div class="calc-detail-step"><span>Konversi ke ${unitText}</span><span>${result.toLocaleString('id-ID', {maximumFractionDigits: 2})} ${unitText}</span></div>
+    `;
+  } else if (calcMode === 'peta') {
+    const sebenarnya = parseFloat(document.getElementById('calcSebenarnyaVal')?.value);
+    const satuan = document.getElementById('calcSatuan')?.value;
+    const skala = parseFloat(document.getElementById('calcSkala')?.value);
+    
+    if (!sebenarnya || !skala || sebenarnya <= 0 || skala <= 0) {
+      valueEl.textContent = '—';
+      unitEl.textContent = 'lengkapi semua kolom';
+      detailEl.style.display = 'none';
+      return;
+    }
+    
+    let sebenarnyaCm = sebenarnya;
+    if (satuan === 'm') sebenarnyaCm = sebenarnya * 100;
+    if (satuan === 'km') sebenarnyaCm = sebenarnya * 100000;
+    
+    const jarakPeta = sebenarnyaCm / skala;
+    
+    valueEl.textContent = jarakPeta.toLocaleString('id-ID', {maximumFractionDigits: 2});
+    unitEl.textContent = 'cm di peta';
+    
+    detailEl.style.display = 'block';
+    detailContent.innerHTML = `
+      <div class="calc-detail-step"><span>Jarak sebenarnya</span><span>${sebenarnya} ${satuan}</span></div>
+      <div class="calc-detail-step"><span>Konversi ke cm</span><span>${sebenarnyaCm.toLocaleString('id-ID')} cm</span></div>
+      <div class="calc-detail-step"><span>Skala</span><span>1 : ${skala.toLocaleString('id-ID')}</span></div>
+      <div class="calc-detail-step"><span>Jarak peta = ÷ skala</span><span>${jarakPeta.toLocaleString('id-ID', {maximumFractionDigits: 2})} cm</span></div>
+    `;
+  }
+}
+
+/* ============ QUIZ ============ */
+const questions = [
+  // 1-5: Konsep dasar (PG)
+  {
+    tipe: 'pg',
+    soal: 'Skala 1:100.000 artinya 1 cm di peta sama dengan ... di keadaan sebenarnya.',
+    pilihan: ['100 m', '1 km', '10 km', '100 km'],
+    jawaban: '1 km',
+    penjelasan: '100.000 cm = 1.000 m = 1 km. Jadi 1 cm peta = 1 km sebenarnya.'
+  },
+  {
+    tipe: 'pg',
+    soal: 'Manakah yang termasuk skala besar?',
+    pilihan: ['1:1.000.000', '1:500.000', '1:100.000', '1:25.000'],
+    jawaban: '1:25.000',
+    penjelasan: 'Skala besar memiliki angka perbandingan kecil (≤ 250.000). 1:25.000 memberikan detail paling tinggi.'
+  },
+  {
+    tipe: 'pg',
+    soal: 'Peta berskala 1:50.000. Jika jarak pada peta 4 cm, jarak sebenarnya adalah ...',
+    pilihan: ['200 m', '2 km', '20 km', '200 km'],
+    jawaban: '2 km',
+    penjelasan: '4 × 50.000 = 200.000 cm = 2.000 m = 2 km.'
+  },
+  {
+    tipe: 'pg',
+    soal: 'Skala 1:200.000, jarak sebenarnya 10 km. Jarak pada peta = ...',
+    pilihan: ['2 cm', '5 cm', '20 cm', '50 cm'],
+    jawaban: '5 cm',
+    penjelasan: '10 km = 1.000.000 cm. Jarak peta = 1.000.000 ÷ 200.000 = 5 cm.'
+  },
+  {
+    tipe: 'pg',
+    soal: 'Peta dengan skala 1:1.000.000 termasuk jenis skala ...',
+    pilihan: ['besar', 'sedang', 'kecil', 'sangat besar'],
+    jawaban: 'kecil',
+    penjelasan: 'Skala kecil memiliki angka perbandingan besar (> 500.000), cocok untuk peta negara/dunia.'
+  },
+  // 6-10: Mencari skala (isian)
+  {
+    tipe: 'isian',
+    soal: 'Jarak pada peta 6 cm, jarak sebenarnya 3 km. Skala peta = 1 : ...',
+    jawaban: '50000',
+    penjelasan: '3 km = 300.000 cm. Skala = 300.000 ÷ 6 = 50.000. Jadi skala 1:50.000.',
+    accept: ['50000', '50.000']
+  },
+  {
+    tipe: 'isian',
+    soal: 'Jarak pada peta 8 cm, jarak sebenarnya 16 km. Skala peta = 1 : ...',
+    jawaban: '200000',
+    penjelasan: '16 km = 1.600.000 cm. Skala = 1.600.000 ÷ 8 = 200.000. Jadi skala 1:200.000.',
+    accept: ['200000', '200.000']
+  },
+  {
+    tipe: 'isian',
+    soal: 'Jarak pada peta 5 cm, jarak sebenarnya 25 km. Skala peta = 1 : ...',
+    jawaban: '500000',
+    penjelasan: '25 km = 2.500.000 cm. Skala = 2.500.000 ÷ 5 = 500.000. Jadi skala 1:500.000.',
+    accept: ['500000', '500.000']
+  },
+  {
+    tipe: 'isian',
+    soal: 'Jarak pada peta 12 cm, jarak sebenarnya 6 km. Skala peta = 1 : ...',
+    jawaban: '50000',
+    penjelasan: '6 km = 600.000 cm. Skala = 600.000 ÷ 12 = 50.000. Jadi skala 1:50.000.',
+    accept: ['50000', '50.000']
+  },
+  {
+    tipe: 'isian',
+    soal: 'Jarak pada peta 10 cm, jarak sebenarnya 50 km. Skala peta = 1 : ...',
+    jawaban: '500000',
+    penjelasan: '50 km = 5.000.000 cm. Skala = 5.000.000 ÷ 10 = 500.000. Jadi skala 1:500.000.',
+    accept: ['500000', '500.000']
+  },
+  // 11-15: Mencari jarak sebenarnya (isian)
+  {
+    tipe: 'isian',
+    soal: 'Skala 1:250.000, jarak pada peta 5 cm. Jarak sebenarnya = ... km',
+    jawaban: '12.5',
+    penjelasan: '5 × 250.000 = 1.250.000 cm = 12,5 km.',
+    accept: ['12,5', '12.5']
+  },
+  {
+    tipe: 'isian',
+    soal: 'Skala 1:100.000, jarak pada peta 12 cm. Jarak sebenarnya = ... km',
+    jawaban: '12',
+    penjelasan: '12 × 100.000 = 1.200.000 cm = 12 km.',
+    accept: ['12', '12,0']
+  },
+  {
+    tipe: 'isian',
+    soal: 'Skala 1:300.000, jarak pada peta 12 cm. Jarak sebenarnya = ... km',
+    jawaban: '36',
+    penjelasan: '12 × 300.000 = 3.600.000 cm = 36 km.',
+    accept: ['36']
+  },
+  {
+    tipe: 'isian',
+    soal: 'Skala 1:500.000, jarak pada peta 14 cm. Jarak sebenarnya = ... km',
+    jawaban: '70',
+    penjelasan: '14 × 500.000 = 7.000.000 cm = 70 km.',
+    accept: ['70']
+  },
+  {
+    tipe: 'isian',
+    soal: 'Skala 1:25.000, jarak pada peta 10 cm. Jarak sebenarnya = ... m',
+    jawaban: '2500',
+    penjelasan: '10 × 25.000 = 250.000 cm = 2.500 m.',
+    accept: ['2500', '2.500']
+  },
+  // 16-20: Mencari jarak pada peta (isian)
+  {
+    tipe: 'isian',
+    soal: 'Skala 1:250.000, jarak sebenarnya 25 km. Jarak pada peta = ... cm',
+    jawaban: '10',
+    penjelasan: '25 km = 2.500.000 cm. Jarak peta = 2.500.000 ÷ 250.000 = 10 cm.',
+    accept: ['10']
+  },
+  {
+    tipe: 'isian',
+    soal: 'Skala 1:150.000, jarak sebenarnya 4,5 km. Jarak pada peta = ... cm',
+    jawaban: '3',
+    penjelasan: '4,5 km = 450.000 cm. Jarak peta = 450.000 ÷ 150.000 = 3 cm.',
+    accept: ['3']
+  },
+  {
+    tipe: 'isian',
+    soal: 'Skala 1:100.000, jarak sebenarnya 7,5 km. Jarak pada peta = ... cm',
+    jawaban: '7.5',
+    penjelasan: '7,5 km = 750.000 cm. Jarak peta = 750.000 ÷ 100.000 = 7,5 cm.',
+    accept: ['7,5', '7.5']
+  },
+  {
+    tipe: 'isian',
+    soal: 'Skala 1:2.000.000, jarak sebenarnya 80 km. Jarak pada peta = ... cm',
+    jawaban: '4',
+    penjelasan: '80 km = 8.000.000 cm. Jarak peta = 8.000.000 ÷ 2.000.000 = 4 cm.',
+    accept: ['4']
+  },
+  {
+    tipe: 'isian',
+    soal: 'Skala 1:200.000, jarak sebenarnya 30 km. Jarak pada peta = ... cm',
+    jawaban: '15',
+    penjelasan: '30 km = 3.000.000 cm. Jarak peta = 3.000.000 ÷ 200.000 = 15 cm.',
+    accept: ['15']
+  }
+];
+
+const quizSections = [
+  { title: 'Konsep Dasar Skala', range: [0, 5], color: 'coral' },
+  { title: 'Mencari Skala', range: [5, 10], color: 'teal' },
+  { title: 'Mencari Jarak Sebenarnya', range: [10, 15], color: 'amber' },
+  { title: 'Mencari Jarak pada Peta', range: [15, 20], color: 'green' }
+];
+
+let userAnswers = new Array(20).fill(null);
+let checkedAnswers = new Array(20).fill(false);
+
+function renderQuiz() {
+  const container = document.getElementById('quizContent');
+  let html = '';
+  
+  quizSections.forEach((section, sIdx) => {
+    html += `<div class="quiz-section-title">
+      <span>${section.title}</span>
+      <span class="badge ${section.color}">${section.range[1] - section.range[0]} soal</span>
+    </div>`;
+    
+    for (let i = section.range[0]; i < section.range[1]; i++) {
+      const q = questions[i];
+      html += `<div class="question-card" id="qcard-${i}">`;
+      html += `<div class="question-header">`;
+      html += `<span class="question-num">Soal ${i + 1}</span>`;
+      html += `<span class="question-status pending" id="status-${i}">Belum Dijawab</span>`;
+      html += `</div>`;
+      html += `<div class="question-text">${q.soal}</div>`;
+      
+      if (q.tipe === 'pg') {
+        html += `<div class="question-options single">`;
+        q.pilihan.forEach((opt, j) => {
+          const letter = String.fromCharCode(97 + j);
+          html += `<button class="option-btn" data-q="${i}" data-opt="${opt}" onclick="selectOption(${i}, '${opt.replace(/'/g, "\\'")}')">
+            <span class="opt-label">${letter}</span>
+            <span>${opt}</span>
+          </button>`;
+        });
+        html += `</div>`;
+      } else {
+        html += `<input type="text" class="text-input" placeholder="Tulis jawabanmu di sini..." 
+                  onchange="textInputAnswer(${i}, this.value)" 
+                  oninput="textInputAnswer(${i}, this.value)">`;
+      }
+      
+      html += `<div class="explanation" id="expl-${i}">
+        <strong><i class="fas fa-lightbulb"></i> Penjelasan:</strong> ${q.penjelasan}
+      </div>`;
+      html += `</div>`;
+    }
+  });
+  
+  container.innerHTML = html;
+  
+  // Render number grid
+  const gridNum = document.getElementById('quizGridNum');
+  let numHtml = '';
+  for (let i = 0; i < 20; i++) {
+    numHtml += `<button class="num-btn" id="numbtn-${i}" onclick="scrollToQuestion(${i})">${i + 1}</button>`;
+  }
+  gridNum.innerHTML = numHtml;
+}
+
+function selectOption(qIdx, opt) {
+  if (checkedAnswers[qIdx]) return; // Already checked, don't allow change
+  userAnswers[qIdx] = opt;
+  
+  // Update UI
+  const card = document.getElementById(`qcard-${qIdx}`);
+  card.querySelectorAll('.option-btn').forEach(btn => {
+    btn.classList.remove('selected');
+    if (btn.dataset.opt === opt) {
+      btn.classList.add('selected');
+    }
+  });
+  
+  // Update status
+  const status = document.getElementById(`status-${qIdx}`);
+  status.className = 'question-status pending';
+  status.textContent = 'Belum Diperiksa';
+  
+  // Update num btn
+  const numBtn = document.getElementById(`numbtn-${qIdx}`);
+  numBtn.classList.add('answered');
+  numBtn.classList.remove('correct', 'wrong');
+}
+
+function textInputAnswer(qIdx, val) {
+  if (checkedAnswers[qIdx]) return;
+  userAnswers[qIdx] = val.trim();
+  
+  const status = document.getElementById(`status-${qIdx}`);
+  if (val.trim()) {
+    status.className = 'question-status pending';
+    status.textContent = 'Belum Diperiksa';
+    document.getElementById(`numbtn-${qIdx}`).classList.add('answered');
+  } else {
+    status.className = 'question-status pending';
+    status.textContent = 'Belum Dijawab';
+    document.getElementById(`numbtn-${qIdx}`).classList.remove('answered');
+  }
+}
+
+function checkAnswer(qIdx) {
+  const q = questions[qIdx];
+  const userAns = userAnswers[qIdx];
+  
+  if (!userAns) return false;
+  
+  let isCorrect = false;
+  if (q.tipe === 'pg') {
+    isCorrect = userAns === q.jawaban;
+  } else {
+    const normalized = String(userAns).toLowerCase().replace(/[.\s]/g, '').replace(',', '.');
+    const correct = String(q.jawaban).toLowerCase().replace(/[.\s]/g, '').replace(',', '.');
+    isCorrect = normalized === correct;
+    
+    // Check accepted answers
+    if (!isCorrect && q.accept) {
+      for (const acc of q.accept) {
+        const accNorm = acc.toLowerCase().replace(/[.\s]/g, '').replace(',', '.');
+        if (normalized === accNorm) {
+          isCorrect = true;
+          break;
+        }
+      }
+    }
+  }
+  
+  // Update UI
+  const card = document.getElementById(`qcard-${qIdx}`);
+  const status = document.getElementById(`status-${qIdx}`);
+  const numBtn = document.getElementById(`numbtn-${qIdx}`);
+  const expl = document.getElementById(`expl-${qIdx}`);
+  
+  card.classList.remove('correct', 'wrong');
+  card.classList.add(isCorrect ? 'correct' : 'wrong');
+  
+  status.className = `question-status ${isCorrect ? 'correct' : 'wrong'}`;
+  status.textContent = isCorrect ? 'Benar' : 'Salah';
+  
+  numBtn.classList.remove('answered', 'current');
+  numBtn.classList.add(isCorrect ? 'correct' : 'wrong');
+  
+  expl.classList.add('show');
+  
+  // For PG, highlight correct answer
+  if (q.tipe === 'pg') {
+    card.querySelectorAll('.option-btn').forEach(btn => {
+      btn.classList.remove('correct-answer', 'wrong-answer');
+      btn.disabled = true;
+      if (btn.dataset.opt === q.jawaban) {
+        btn.classList.add('correct-answer');
+      } else if (btn.dataset.opt === userAns && !isCorrect) {
+        btn.classList.add('wrong-answer');
+      }
+    });
+  }
+  
+  checkedAnswers[qIdx] = true;
+  return isCorrect;
+}
+
+function checkAllAnswers() {
+  let unanswered = 0;
+  for (let i = 0; i < 20; i++) {
+    if (!userAnswers[i]) {
+      unanswered++;
+    } else if (!checkedAnswers[i]) {
+      checkAnswer(i);
+    }
+  }
+  
+  const score = calculateScore();
+  document.getElementById('scoreValue').textContent = score;
+  
+  if (unanswered > 0) {
+    showToast(`Masih ada ${unanswered} soal belum dijawab. Skor sementara: ${score}/20`, 'info');
+  } else {
+    if (score === 20) {
+      showToast(`Luar biasa! Skor sempurna: ${score}/20`, 'success');
+    } else if (score >= 15) {
+      showToast(`Hebat! Skor kamu: ${score}/20`, 'success');
+    } else if (score >= 10) {
+      showToast(`Bagus! Skor kamu: ${score}/20. Terus berlatih!`, 'info');
+    } else {
+      showToast(`Skor kamu: ${score}/20. Pelajari lagi materinya ya!`, 'error');
+    }
+  }
+}
+
+function calculateScore() {
+  let score = 0;
+  for (let i = 0; i < 20; i++) {
+    if (!userAnswers[i]) continue;
+    
+    const q = questions[i];
+    let isCorrect = false;
+    
+    if (q.tipe === 'pg') {
+      isCorrect = userAnswers[i] === q.jawaban;
+    } else {
+      const normalized = String(userAnswers[i]).toLowerCase().replace(/[.\s]/g, '').replace(',', '.');
+      const correct = String(q.jawaban).toLowerCase().replace(/[.\s]/g, '').replace(',', '.');
+      isCorrect = normalized === correct;
+      
+      if (!isCorrect && q.accept) {
+        for (const acc of q.accept) {
+          const accNorm = acc.toLowerCase().replace(/[.\s]/g, '').replace(',', '.');
+          if (normalized === accNorm) {
+            isCorrect = true;
+            break;
+          }
+        }
+      }
+    }
+    
+    if (isCorrect) score++;
+  }
+  return score;
+}
+
+function resetQuiz() {
+  userAnswers = new Array(20).fill(null);
+  checkedAnswers = new Array(20).fill(false);
+  renderQuiz();
+  document.getElementById('scoreValue').textContent = '0';
+  showToast('Jawaban berhasil direset', 'info');
+}
+
+function scrollToQuestion(idx) {
+  const card = document.getElementById(`qcard-${idx}`);
+  if (card) {
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    card.style.transform = 'scale(1.02)';
+    setTimeout(() => { card.style.transform = ''; }, 500);
+  }
+}
+
+// Auto-update score when answering
+function updateScoreDisplay() {
+  document.getElementById('scoreValue').textContent = calculateScore();
+}
+
+/* ============ TOAST ============ */
+function showToast(message, type = 'info') {
+  const toast = document.getElementById('toast');
+  toast.className = 'toast ' + type;
+  toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i> ${message}`;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+/* ============ INIT ============ */
+renderCalcInputs();
+renderQuiz();
+updateScaleBar();
+</script>
+
+</body>
+</html>
