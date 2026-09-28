@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Skala — Matematika Kelas 7</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+ --violet:#7c3aed; --teal:#06b6d4; --amber:#f59e0b; --green:#10b981; --red:#ef4444;
+ --ink:#1e1b4b; --shadow:0 10px 30px rgba(76,29,149,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Nunito',sans-serif;color:var(--ink);background:linear-gradient(135deg,#ede9fe,#e0f2fe 55%,#fef9c3);overflow:hidden}
+h1,h2,h3,.fun{font-family:'Fredoka',sans-serif}
+.hidden{display:none!important}
+.muted{color:#8b87a8;font-size:13.5px;font-weight:700}
+.bignum{font-family:'Fredoka';font-size:22px;color:#6d28d9}
+
+/* ===== TOP BAR & NAV ===== */
+.topbar{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:center;gap:12px;padding:0 14px;background:rgba(255,255,255,.88);backdrop-filter:blur(8px);z-index:50;box-shadow:0 2px 12px rgba(76,29,149,.08)}
+.logo{font-family:'Fredoka';font-weight:700;color:var(--violet);font-size:17px;white-space:nowrap}
+.pwrap{flex:1;height:10px;background:#ede9fe;border-radius:99px;overflow:hidden}
+#progressBar{height:100%;width:0;background:linear-gradient(90deg,#7c3aed,#06b6d4,#f59e0b);border-radius:99px;transition:width .4s}
+#slideCounter{font-weight:800;font-size:13px;color:#6d28d9;background:#f3e8ff;padding:4px 10px;border-radius:99px;white-space:nowrap}
+.iconbtn{border:none;background:#f3e8ff;font-size:18px;width:38px;height:38px;border-radius:12px;cursor:pointer}
+.iconbtn:hover{background:#e9d5ff}
+.bottomnav{position:fixed;bottom:0;left:0;right:0;height:64px;display:flex;justify-content:space-between;align-items:center;padding:0 16px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);z-index:50;border-top:2px solid #ede9fe}
+.navbtn{font-family:'Fredoka';font-size:15px;border:none;padding:12px 22px;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;cursor:pointer;box-shadow:0 6px 16px rgba(124,58,237,.35);transition:.2s}
+.navbtn:hover{transform:translateY(-2px)}
+.navbtn.ghost{background:#fff;color:#6d28d9;border:2px solid #ddd6fe;box-shadow:none}
+
+/* ===== MENU OVERLAY ===== */
+.overlay{position:fixed;inset:0;background:rgba(30,27,75,.55);z-index:100;display:none;align-items:center;justify-content:center}
+.overlay.open{display:flex}
+.menu-card{background:#fff;border-radius:24px;padding:22px;max-width:430px;width:92%;max-height:82vh;overflow:auto}
+.menu-card h3{color:#6d28d9;margin-bottom:10px}
+.menu-item{display:block;width:100%;text-align:left;border:none;background:#f8fafc;margin:6px 0;padding:11px 14px;border-radius:12px;cursor:pointer;font-family:'Nunito';font-weight:700;color:#3730a3;font-size:14px}
+.menu-item:hover{background:#ede9fe}
+
+/* ===== DECK / SLIDES ===== */
+#deck{position:fixed;inset:56px 0 64px 0}
+.slide{position:absolute;inset:0;padding:18px 22px 30px;overflow-y:auto;opacity:0;transform:translateX(40px) scale(.98);pointer-events:none;transition:all .45s ease}
+.slide.active{opacity:1;transform:none;pointer-events:auto}
+.slide-inner{max-width:1150px;margin:0 auto}
+.stitle{font-size:clamp(22px,3.4vw,32px);color:#4c1d95;margin-bottom:10px}
+
+/* ===== COVER ===== */
+.cover{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;padding:16px 6px}
+.cover .float{font-size:44px;letter-spacing:10px;animation:bob 3s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-10px)}}
+.cover h1{font-size:clamp(34px,6vw,58px);color:#4c1d95}
+.grad{background:linear-gradient(90deg,#7c3aed,#06b6d4,#f59e0b);-webkit-background-clip:text;background-clip:text;color:transparent}
+.subtitle{font-size:17px;color:#55517b;font-weight:700}
+.name-card{display:flex;gap:14px;align-items:stretch;flex-wrap:wrap;justify-content:center;background:#fff;border-radius:24px;padding:20px 24px;box-shadow:var(--shadow);margin:8px 0}
+.name-input{display:flex;flex-direction:column;gap:6px;min-width:210px;padding:14px;border-radius:18px;border:3px dashed}
+.name-input.p1{border-color:#c4b5fd;background:#faf5ff}
+.name-input.p2{border-color:#67e8f9;background:#ecfeff}
+.name-input label{font-weight:800;font-size:13px;color:#6d28d9}
+.name-input input{border:none;border-bottom:2px solid #c4b5fd;background:transparent;font-family:'Nunito';font-weight:800;font-size:17px;padding:6px 2px;outline:none;color:#1e1b4b;text-align:center}
+.vs{align-self:center;font-family:'Fredoka';font-weight:700;color:#f59e0b;font-size:24px}
+.btn-start{font-family:'Fredoka';font-size:19px;border:none;padding:16px 34px;border-radius:99px;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;cursor:pointer;box-shadow:0 10px 24px rgba(124,58,237,.4);transition:.2s}
+.btn-start:hover{transform:translateY(-3px) scale(1.02)}
+.hint{font-size:13px;color:#8b87a8;font-weight:700}
+
+/* ===== TABS & CARDS ===== */
+.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.tab{border:2px solid #ddd6fe;background:#fff;padding:9px 16px;border-radius:99px;font-family:'Fredoka';font-weight:600;font-size:14px;cursor:pointer;color:#6d28d9}
+.tab.active{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border-color:transparent}
+.tabpane{display:none}
+.tabpane.active{display:block;animation:rise .4s ease}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+.grid2{display:grid;grid-template-columns:1.05fr 1fr;gap:14px;align-items:start}
+.card{background:#fff;border-radius:20px;padding:16px 18px;box-shadow:var(--shadow)}
+.card h3{color:#6d28d9;margin-bottom:8px}
+.card ul{margin:6px 0 6px 20px;font-size:14.5px;line-height:1.7}
+.exbox{background:#fefce8;border-left:5px solid #f59e0b;border-radius:12px;padding:10px 12px;margin:10px 0;font-size:14.5px}
+.warnbox{background:#fef2f2;border-left:5px solid #ef4444;border-radius:12px;padding:10px 12px;margin:10px 0;font-size:14px;font-weight:700}
+.okbox{background:#ecfdf5;border-left:5px solid #10b981;border-radius:12px;padding:10px 12px;margin:10px 0;font-size:14px;font-weight:700}
+.formula{background:#f5f3ff;border:2px dashed #c4b5fd;border-radius:14px;padding:10px 14px;text-align:center;font-weight:800;color:#6d28d9;margin:10px 0}
+
+/* ===== WIDGET VISUAL ===== */
+.selrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-weight:800;margin-bottom:8px}
+select{border:2px solid #ddd6fe;border-radius:10px;padding:6px 10px;font-family:'Nunito';font-weight:800;font-size:14px;color:#4c1d95;background:#fff;outline:none}
+.btn-check{border:none;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-family:'Fredoka';font-weight:600;padding:10px 16px;border-radius:12px;cursor:pointer;font-size:14px}
+.btn-check:hover{filter:brightness(1.08)}
+.btn{border:2px solid #ddd6fe;background:#fff;color:#6d28d9;font-family:'Fredoka';font-weight:600;padding:9px 16px;border-radius:12px;cursor:pointer;font-size:14px}
+.rangev{font-weight:800;color:#6d28d9;min-width:56px;display:inline-block}
+input[type=range]{accent-color:#7c3aed;width:180px}
+
+/* Zoom peta (M1) */
+.zsbtns{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.zsbtn{border:2px solid #ddd6fe;background:#fff;border-radius:12px;padding:8px 12px;font-family:'Fredoka';font-weight:600;cursor:pointer;color:#6d28d9;font-size:14px}
+.zsbtn.sel{background:#7c3aed;color:#fff;border-color:#7c3aed}
+.maparea{display:flex;align-items:center;gap:6px;justify-content:center;background:#ecfdf5;border:2px solid #a7f3d0;border-radius:14px;padding:12px;min-height:74px}
+.roadwrap{flex:1;max-width:430px;height:26px;display:flex;align-items:center}
+.roadbar{height:10px;background:repeating-linear-gradient(90deg,#f59e0b 0 12px,#1e293b 12px 18px);border-radius:99px;width:0;transition:width .5s;min-width:8px}
+.city{font-size:26px;text-align:center;line-height:1.1;font-weight:800;color:#4c1d95}
+.mapjp{background:#f5f3ff;border-radius:12px;padding:8px 10px;text-align:center;font-weight:700;margin-top:8px}
+.trisvg{width:210px;display:block;margin:8px auto}
+.ttxt{font-family:'Fredoka';font-weight:700;font-size:20px;fill:#6d28d9}
+
+/* Penggaris & penggambar (M3, M4) */
+.measbar{height:14px;background:linear-gradient(90deg,#ef4444,#f97316);border-radius:99px;transition:width .3s;min-width:6px}
+.realbar{height:14px;background:linear-gradient(90deg,#10b981,#059669);border-radius:99px;transition:width .5s}
+.paper{background:#fffdf5;border:2px dashed #d6d3d1;border-radius:14px;padding:16px;position:relative;min-height:76px;margin-top:8px}
+.drawline{height:8px;background:linear-gradient(90deg,#334155,#0ea5e9);border-radius:99px;width:0;position:relative}
+.pencil{position:absolute;top:-18px;left:0;font-size:22px;transition:left 1s ease}
+.steps .step{background:#f8fafc;border-left:4px solid #a78bfa;padding:8px 12px;margin:6px 0;border-radius:10px;font-weight:700;animation:rise .4s ease}
+.res{font-weight:800;color:#059669;margin-top:6px;font-size:15.5px;min-height:22px}
+.ubar{height:38px;background:#f1f5f9;border-radius:10px;overflow:hidden;margin:6px 0}
+.ufill{height:100%;border-radius:10px;display:flex;align-items:center;padding-left:10px;color:#fff;font-weight:800;transition:width .5s;white-space:nowrap}
+.f1{background:linear-gradient(90deg,#8b5cf6,#6d28d9)}
+.f2{background:linear-gradient(90deg,#22d3ee,#0891b2)}
+
+/* Luas (M5) */
+.l5flex{display:flex;gap:16px;align-items:flex-end;justify-content:center;flex-wrap:wrap;margin:10px 0}
+.l5rect{background:#ede9fe;border:3px solid #7c3aed;border-radius:8px;transition:all .3s;display:flex;align-items:center;justify-content:center;font-weight:800;color:#6d28d9;min-width:30px;min-height:30px}
+.l5big{background:#cffafe;border:3px solid #0891b2;border-radius:8px;transition:all .3s;display:flex;align-items:flex-end;justify-content:center;font-weight:800;color:#0e7490;padding:6px;min-width:40px;min-height:40px}
+.sqgrid{display:none;grid-template-columns:repeat(10,16px);gap:2px;justify-content:center;margin:10px auto}
+.sqgrid.open{display:grid}
+.sqgrid span{width:16px;height:16px;background:#a78bfa;border-radius:3px;animation:pop .3s ease both}
+@keyframes pop{from{transform:scale(.3);opacity:0}}
+
+/* ===== LATIHAN ===== */
+.qcard{background:#fff;border-radius:18px;padding:14px 16px;box-shadow:var(--shadow);margin:12px 0;border-top:4px solid #c4b5fd}
+.qnum{display:inline-block;background:#7c3aed;color:#fff;font-weight:800;font-size:12px;padding:3px 10px;border-radius:99px;margin-bottom:8px}
+.qtext{font-weight:800;font-size:15.5px;margin-bottom:10px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt{text-align:left;border:2px solid #e9d5ff;background:#faf5ff;border-radius:12px;padding:10px 12px;font-family:'Nunito';font-weight:700;font-size:14px;cursor:pointer;transition:.15s;color:#1e1b4b}
+.opt:hover:not(:disabled){border-color:#7c3aed}
+.opt.sel{border-color:#7c3aed;background:#ede9fe;box-shadow:0 0 0 3px #ddd6fe}
+.opt.right{border-color:#10b981;background:#d1fae5}
+.opt.wrong{border-color:#ef4444;background:#fee2e2}
+.opt:disabled{cursor:default}
+.qact{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.btn-exp{border:2px solid #f59e0b;background:#fffbeb;color:#b45309;font-family:'Fredoka';padding:8px 14px;border-radius:12px;cursor:pointer;font-weight:600;font-size:14px}
+.fb{margin-top:8px;font-weight:800;min-height:20px;font-size:14.5px}
+.fb.good{color:#059669}.fb.bad{color:#dc2626}
+.exp{background:#eff6ff;border-left:4px solid #3b82f6;border-radius:10px;padding:10px 12px;margin-top:8px;font-size:14px;animation:rise .3s ease}
+.pscore{background:#4c1d95;color:#fff;font-weight:800;text-align:center;padding:12px;border-radius:14px;margin-top:14px}
+
+/* ===== KUIS DUEL ===== */
+.scoreboard{display:flex;gap:10px;align-items:center;justify-content:center;margin:10px 0;flex-wrap:wrap}
+.scard{background:#fff;border-radius:16px;padding:10px 18px;box-shadow:var(--shadow);display:flex;gap:12px;align-items:center;font-weight:800;border-top:5px solid}
+.scard.s1{border-color:#8b5cf6}.scard.s2{border-color:#06b6d4}
+.scard b{font-family:'Fredoka';font-size:26px;color:#4c1d95}
+.vs2{font-family:'Fredoka';color:#f59e0b;font-weight:700;font-size:20px}
+.pickrow{display:flex;gap:8px;align-items:center;justify-content:center;margin:6px 0 10px;flex-wrap:wrap;font-weight:800;color:#4c1d95}
+.turnbtn{border:2px solid #e2e8f0;background:#fff;border-radius:99px;padding:8px 16px;font-family:'Fredoka';font-weight:600;cursor:pointer;transition:.15s}
+#turn1.active{background:#ede9fe;border-color:#8b5cf6;transform:scale(1.08)}
+#turn2.active{background:#ecfeff;border-color:#06b6d4;transform:scale(1.08)}
+.legend{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;font-size:12px;font-weight:800;margin-bottom:6px}
+.chip{padding:3px 10px;border-radius:99px}
+.chip.c0{background:#d1fae5;color:#065f46}.chip.c1{background:#fef3c7;color:#92400e}.chip.c2{background:#fee2e2;color:#991b1b}
+.numgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:8px;margin:10px 0}
+.numb{height:48px;border-radius:12px;border:2px solid transparent;font-family:'Fredoka';font-weight:600;font-size:17px;cursor:pointer;transition:.15s;color:#1e1b4b}
+.numb.lv0{background:#d1fae5;border-color:#6ee7b7}
+.numb.lv1{background:#fef3c7;border-color:#fcd34d}
+.numb.lv2{background:#fee2e2;border-color:#fca5a5}
+.numb:hover:not(:disabled){transform:translateY(-2px)}
+.numb.taken1{background:#7c3aed;color:#fff;border-color:#7c3aed}
+.numb.taken2{background:#06b6d4;color:#fff;border-color:#06b6d4}
+.numb:disabled{cursor:not-allowed;opacity:.95}
+.duel{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.duel-panel{background:#fff;border-radius:20px;padding:14px;box-shadow:var(--shadow);min-height:220px}
+.duel-panel.p1{border-top:6px solid #8b5cf6}
+.duel-panel.p2{border-top:6px solid #06b6d4}
+.dp-head{font-family:'Fredoka';font-weight:600;font-size:16px;color:#4c1d95;margin-bottom:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lvl{font-size:11px;padding:3px 9px;border-radius:99px;color:#fff;font-weight:700}
+.lvl.lv0{background:#10b981}.lvl.lv1{background:#f59e0b}.lvl.lv2{background:#ef4444}
+.dp-empty{color:#8b87a8;font-weight:700;text-align:center;padding:30px 8px}
+.dp-q{font-weight:800;margin-bottom:10px;font-size:15px}
+#quizProg{text-align:center;font-weight:800;color:#6d28d9;margin-top:8px}
+#quizResult{text-align:center;font-family:'Fredoka';font-size:20px;color:#b45309;min-height:28px;margin-top:6px}
+
+/* ===== GAME BALON ===== */
+.game-wrap{display:grid;grid-template-columns:1.15fr 1fr;gap:14px;align-items:start}
+.gsky{position:relative;height:190px;background:linear-gradient(#bae6fd,#e0f2fe);border-radius:18px;overflow:hidden;border:2px solid #bae6fd}
+.cloud{position:absolute;font-size:26px;opacity:.8}
+.balloon{position:absolute;left:4%;top:26%;font-size:48px;transition:left 1.8s ease-in-out;z-index:2}
+.balloon.fly{left:73%}
+.balloon.shake{animation:shk .5s}
+@keyframes shk{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-5px)}}
+.island{position:absolute;right:2%;bottom:8px;font-size:36px;z-index:1}
+.gsea{position:absolute;bottom:0;left:0;right:0;height:26px;background:linear-gradient(#7dd3fc,#38bdf8)}
+.gops{background:#f8fafc;border-radius:14px;padding:10px;margin:8px 0}
+.gops h4{color:#6d28d9;margin-bottom:6px;font-family:'Fredoka'}
+.opbtn{border:2px solid #ddd6fe;background:#fff;border-radius:12px;padding:9px 14px;margin:3px;font-family:'Fredoka';font-weight:600;cursor:pointer;color:#4c1d95;font-size:14px}
+.opbtn.sel{background:#7c3aed;color:#fff;border-color:#7c3aed}
+.gmsg{background:#f8fafc;border-radius:12px;padding:10px;font-weight:800;color:#4c1d95;min-height:46px;margin-top:8px}
+.gmsg.good{background:#d1fae5;color:#065f46}
+.gmsg.bad{background:#fee2e2;color:#991b1b}
+.gstat{display:flex;gap:10px;margin:8px 0;flex-wrap:wrap}
+.gstat .gs{flex:1;background:#f5f3ff;border-radius:12px;padding:8px;text-align:center;font-weight:800}
+.gs b{display:block;font-family:'Fredoka';font-size:24px;color:#6d28d9}
+.gbtn{display:block;width:100%;margin:8px 0;border:none;border-radius:14px;padding:13px;font-family:'Fredoka';font-weight:600;font-size:15px;cursor:pointer;color:#fff;transition:.15s}
+.gbtn:active{transform:scale(.97)}
+.btn-launch{background:linear-gradient(135deg,#ef4444,#dc2626)!important;font-size:17px!important}
+.missioncard{background:#fff;border-radius:18px;padding:14px;box-shadow:var(--shadow);margin-bottom:12px}
+
+/* ===== PENUTUP ===== */
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin:10px 0}
+.kcard{background:#fff;border-radius:18px;padding:14px 16px;box-shadow:var(--shadow);font-weight:700;font-size:14.5px;line-height:1.6}
+.kcard b{color:#6d28d9}
+.goldstrip{background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:16px;padding:14px;text-align:center;font-weight:800;color:#92400e;font-size:15.5px;margin:12px 0}
+.emoji-row{display:flex;gap:10px;justify-content:center;margin:12px 0;flex-wrap:wrap}
+.emo{font-size:32px;background:#f8fafc;border:2px solid #e2e8f0;border-radius:16px;padding:8px 12px;cursor:pointer;transition:.15s}
+.emo:hover{transform:scale(1.15)}
+.emo.sel{border-color:#7c3aed;background:#ede9fe;transform:scale(1.15)}
+textarea{width:100%;min-height:110px;border:2px solid #ddd6fe;border-radius:14px;padding:12px;font-family:'Nunito';font-weight:600;font-size:14px;resize:vertical;outline:none}
+textarea:focus{border-color:#7c3aed}
+.check-row{display:flex;gap:14px;flex-wrap:wrap;font-weight:700;font-size:14px;margin:8px 0}
+.check-row label{display:flex;gap:6px;align-items:center;background:#f8fafc;padding:8px 12px;border-radius:12px;cursor:pointer}
+#refSaved{font-weight:800;color:#059669;margin-top:8px;min-height:22px}
+
+/* ===== FX ===== */
+#toast{position:fixed;bottom:78px;left:50%;transform:translateX(-50%) translateY(20px);background:#1e1b4b;color:#fff;padding:11px 20px;border-radius:99px;font-weight:800;z-index:200;opacity:0;pointer-events:none;transition:.3s;font-size:14px;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%)}
+.fxp{position:fixed;top:-50px;z-index:300;animation:fall linear forwards;pointer-events:none}
+@keyframes fall{to{transform:translateY(115vh) rotate(540deg);opacity:.7}}
+
+@media(max-width:900px){
+ .grid2,.duel,.game-wrap{grid-template-columns:1fr}
+ .opts{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== TOP BAR ===== -->
+<header class="topbar">
+ <div class="logo">🗺️ Petualangan Skala</div>
+ <div class="pwrap"><div id="progressBar"></div></div>
+ <div id="slideCounter">1 / 13</div>
+ <button class="iconbtn" onclick="openMenu()">☰</button>
+</header>
+
+<div class="overlay" id="menuOv" onclick="if(event.target===this)closeMenu()">
+ <div class="menu-card"><h3>🗺️ Peta Slide</h3><div id="menuList"></div></div>
+</div>
+
+<main id="deck">
+
+<!-- ================= 1. COVER ================= -->
+<section class="slide active" id="s-cover" data-title="🏠 Sampul & Nama Siswa">
+ <div class="cover">
+  <div class="float">🗺️ 📏 🏝️</div>
+  <h1>Petualangan <span class="grad">SKALA</span></h1>
+  <p class="subtitle">Skala pada Peta dan Denah • Matematika Kelas 7 SMP • Belajar seru, berdua lebih seru!</p>
+  <div class="name-card">
+   <div class="name-input p1">
+    <label>🟣 SISWA 1</label>
+    <input id="name1" maxlength="20" placeholder="Tulis nama Siswa 1">
+   </div>
+   <div class="vs">VS</div>
+   <div class="name-input p2">
+    <label>🔵 SISWA 2</label>
+    <input id="name2" maxlength="20" placeholder="Tulis nama Siswa 2">
+   </div>
+  </div>
+  <button class="btn-start" onclick="go(1)">🚀 Mulai Petualangan!</button>
+  <p class="hint">💡 Nama kalian akan muncul di kuis duel, game, dan slide penutup!<br>Gunakan tombol ← → di keyboard untuk berpindah slide.</p>
+ </div>
+</section>
+
+<!-- ================= 2. SKALA SEHARI-HARI ================= -->
+<section class="slide" id="s-daily" data-title="🌍 Skala dalam Kehidupan Sehari-hari">
+ <div class="slide-inner">
+  <h2 class="stitle">🌍 Skala Ada di Mana-mana!</h2>
+  <p class="muted">Ketuk setiap kartu untuk melihat contoh skala di kehidupan sehari-hari! 👇</p>
+  <div class="grid3" style="margin-top:12px">
+   <div class="kcard">🗺️ <b>Peta Wilayah</b><br><span class="muted">Skala 1 : 1.000.000 → 1 cm di peta = 10 km sebenarnya</span></div>
+   <div class="kcard">🏠 <b>Denah Rumah</b><br><span class="muted">Skala 1 : 100 → 1 cm di denah = 1 m ruangan asli</span></div>
+   <div class="kcard">✈️ <b>Model Pesawat</b><br><span class="muted">Maket kecil yang bentuknya sama persis dengan aslinya</span></div>
+   <div class="kcard">📐 <b>Gambar Teknik</b><br><span class="muted">Insiden memakai skala 1 : 50, 1 : 20 untuk menggambar bangunan</span></div>
+   <div class="kcard">🧩 <b>Maket &amp; Miniatur</b><br><span class="muted">Maket masjid, stadion, atau gedung pada pameran</span></div>
+   <div class="kcard">🛰️ <b>Google Maps</b><br><span class="muted">Saat kamu zoom, sebenarnya kamu mengubah skala peta!</span></div>
+  </div>
+  <div class="card" style="margin-top:12px">
+   <h3>💭 Coba Pikirkan!</h3>
+   <p style="font-size:14.5px;line-height:1.7">Pulau Jawa lebarnya lebih dari 1.000 km — mustahil digambar sebesar aslinya! 😅 Dengan <b>skala</b>, peta raksasa itu bisa "dimasukkan" ke selembar kertas. Rasio 1 : 1.000.000 berarti setiap 1 cm di peta mewakili 1.000.000 cm (10 km) jarak sebenarnya. Hari ini kita akan menguasai trik ini!</p>
+  </div>
+ </div>
+</section>
+
+<!-- ================= 3. TUJUAN ================= -->
+<section class="slide" id="s-goal" data-title="🎯 Tujuan Pembelajaran">
+ <div class="slide-inner">
+  <h2 class="stitle">🎯 Tujuan Pembelajaran</h2>
+  <div class="grid2">
+   <div class="card">
+    <h3>🏁 Setelah pembelajaran ini, kalian dapat…</h3>
+    <ul>
+     <li>🎯 <b>Menjelaskan pengertian skala</b> dan menuliskan notasi skalanya dengan benar.</li>
+     <li>🧮 <b>Menentukan skala</b> jika jarak pada peta dan jarak sebenarnya diketahui.</li>
+     <li>📏 <b>Menghitung jarak sebenarnya</b> (JS) dari jarak pada peta (JP).</li>
+     <li>✏️ <b>Menghitung jarak pada peta</b> (JP) dari jarak sebenarnya (JS).</li>
+     <li>⬜ <b>Menghitung luas sebenarnya</b> berdasarkan skala pada denah (rahasianya: skala dikuadratkan! 🔒).</li>
+    </ul>
+    <div class="okbox">✅ Bekal: kalian sudah menguasai <b>Rasio</b>! Skala adalah penerapan langsung rasio — jadi pasti bisa! 💪</div>
+   </div>
+   <div class="card">
+    <h3>🗺️ Peta Perjalanan Bab Ini</h3>
+    <div style="display:flex;flex-direction:column;gap:8px;font-weight:800">
+     <div style="background:#f8fafc;border-radius:12px;padding:10px 14px">1️⃣ Rasio — sudah kalian taklukkan! ✅</div>
+     <div style="background:#ede9fe;border-radius:12px;padding:10px 14px">2️⃣ <b>Skala</b> <span class="okc">← KITA DI SINI HARI INI! 📍</span></div>
+     <div style="background:#f8fafc;border-radius:12px;padding:10px 14px">3️⃣ Perbandingan Senilai — bila satu naik, yang lain ikut naik 🔜</div>
+     <div style="background:#f8fafc;border-radius:12px;padding:10px 14px">4️⃣ Perbandingan Berbalik Nilai — bila satu naik, yang lain turun 🔜</div>
+    </div>
+    <p class="muted" style="margin-top:10px">Hari ini kita bedah 5 materi: <b>pengertian &amp; notasi skala → menentukan skala → jarak sebenarnya → jarak pada peta → luas berdasarkan skala</b>. Siap? 🚀</p>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- ================= 4. M1 PENGERTIAN & NOTASI ================= -->
+<section class="slide" id="s-m1" data-title="🗺️ Pengertian & Notasi Skala">
+ <div class="slide-inner">
+  <h2 class="stitle">🗺️ Materi 1 — Pengertian &amp; Notasi Skala</h2>
+  <div class="tabs"><button class="tab active">📖 Materi</button><button class="tab">✏️ Latihan 10 Soal</button></div>
+  <div class="tabpane active">
+   <div class="grid2">
+    <div class="card">
+     <h3>💡 Apa itu Skala?</h3>
+     <p style="font-size:14.5px;line-height:1.7"><b>Skala</b> adalah <b>perbandingan antara jarak pada peta/denah/gambar dengan jarak sebenarnya</b>.</p>
+     <div class="formula">Skala = JP : JS<br><small>(JP = jarak pada peta • JS = jarak sebenarnya)</small></div>
+     <ul>
+      <li>Selalu ditulis dengan suku pertama <b>1</b> → <b>1 : N</b>.</li>
+      <li>Artinya: <b>1 cm</b> pada peta mewakili <b>N cm</b> jarak sebenarnya.</li>
+      <li><b>Satuan harus sama</b> — hafalkan: 1 km = 100.000 cm, 1 m = 100 cm.</li>
+     </ul>
+     <div class="exbox">🗺️ Skala 1 : 1.000.000 → 1 cm di peta = 1.000.000 cm = <b>10 km</b> sebenarnya.</div>
+     <div class="warnbox">⚠️ Penyebut makin BESAR = peta makin "mengecilkan" (wilayah makin luas yang tergambar). Skala 1 : 5.000.000 lebih "kecil" daripada 1 : 100.000!</div>
+    </div>
+    <div class="card">
+     <h3>🧪 Interaktif: Zoom Peta Ajaib 🔍</h3>
+     <p class="muted">Jarak Kota A–B selalu 60 km. Ganti skala dan lihat peta berubah!</p>
+     <div class="zsbtns">
+      <button class="zsbtn" onclick="zoomSet(0)">1 : 100.000</button>
+      <button class="zsbtn" onclick="zoomSet(1)">1 : 200.000</button>
+      <button class="zsbtn" onclick="zoomSet(2)">1 : 500.000</button>
+      <button class="zsbtn" onclick="zoomSet(3)">1 : 1.000.000</button>
+      <button class="zsbtn" onclick="zoomSet(4)">1 : 2.000.000</button>
+     </div>
+     <div class="notaBig" id="zoomNota" style="font-size:36px">1 : 200.000</div>
+     <div class="maparea">
+      <span class="city">🏙️<br>A</span>
+      <div class="roadwrap"><div id="zoomBar" class="roadbar"></div></div>
+      <span class="city">🏙️<br>B</span>
+     </div>
+     <div class="mapjp">📍 JP = 6.000.000 ÷ N = <b id="zoomJP">30</b> cm di peta</div>
+     <div class="challenge" id="zoomMean">1 cm di peta = 200.000 cm = 2 km jarak sebenarnya</div>
+     <p class="muted" style="margin-top:8px">👀 Perhatikan: makin kecil skala (N makin besar), garis di peta makin pendek — seperti zoom-out!</p>
+    </div>
+   </div>
+  </div>
+  <div class="tabpane"><div class="practice" id="pr1"></div></div>
+ </div>
+</section>
+
+<!-- ================= 5. M2 MENENTUKAN SKALA ================= -->
+<section class="slide" id="s-m2" data-title="🧮 Cara Menentukan Skala">
+ <div class="slide-inner">
+  <h2 class="stitle">🧮 Materi 2 — Cara Menentukan Skala</h2>
+  <div class="tabs"><button class="tab active">📖 Materi</button><button class="tab">✏️ Latihan 10 Soal</button></div>
+  <div class="tabpane active">
+   <div class="grid2">
+    <div class="card">
+     <h3>📝 Langkah Menentukan Skala</h3>
+     <div class="steps">
+      <div class="step">1️⃣ Tulis <b>JP</b> (jarak pada peta) dan <b>JS</b> (jarak sebenarnya).</div>
+      <div class="step">2️⃣ <b>Samakan satuan</b> (ubah km/m menjadi cm).</div>
+      <div class="step">3️⃣ Tulis perbandingan <b>JP : JS</b>.</div>
+      <div class="step">4️⃣ Bagi kedua suku dengan JP agar suku pertama menjadi <b>1</b>.</div>
+     </div>
+     <div class="exbox">✏️ Contoh: JP = 3 cm, JS = 60 km<br>60 km = 6.000.000 cm → 3 : 6.000.000 = (3÷3) : (6.000.000÷3) = <b>1 : 2.000.000</b> ✅</div>
+     <svg class="trisvg" viewBox="0 0 220 120">
+      <polygon points="110,8 15,105 205,105" fill="#f5f3ff" stroke="#a78bfa" stroke-width="3"/>
+      <text x="110" y="44" text-anchor="middle" class="ttxt">SKALA</text>
+      <text x="52" y="98" text-anchor="middle" class="ttxt">JP</text>
+      <text x="168" y="98" text-anchor="middle" class="ttxt">JS</text>
+     </svg>
+     <p class="muted" style="text-align:center">Skala = JP : JS &nbsp;•&nbsp; JP = Skala × JS &nbsp;•&nbsp; JS = JP ÷ Skala</p>
+    </div>
+    <div class="card">
+     <h3>🧪 Interaktif: Kalkulator Skala 🧭</h3>
+     <div class="selrow">JP = <input type="number" id="skJP" value="3" min="1" style="width:80px;border:2px solid #ddd6fe;border-radius:10px;padding:6px;font-family:'Nunito';font-weight:800;color:#4c1d95" > cm
+      &nbsp;JS = <input type="number" id="skJS" value="60" min="1" style="width:100px;border:2px solid #ddd6fe;border-radius:10px;padding:6px;font-family:'Nunito';font-weight:800;color:#4c1d95">
+      <select id="skUnit"><option value="100000">km</option><option value="100">m</option></select></div>
+     <button class="btn-check" onclick="skalaHitung()">🧮 Hitung Skala!</button>
+     <div class="divbtns" style="margin-top:8px">
+      <button class="btn" onclick="skPreset(3,60,'100000')">Contoh 3 cm &amp; 60 km</button>
+      <button class="btn" onclick="skPreset(15,750,'100000')">15 cm &amp; 750 km</button>
+      <button class="btn" onclick="skPreset(4,25,'100000')">4 cm &amp; 25 km</button>
+     </div>
+     <div id="skSteps" class="steps"></div>
+     <div id="skOut" style="background:#f5f3ff;border-radius:12px;padding:10px;text-align:center;font-weight:700;min-height:44px">Isi data lalu tekan Hitung! 🧭</div>
+    </div>
+   </div>
+  </div>
+  <div class="tabpane"><div class="practice" id="pr2"></div></div>
+ </div>
+</section>
+
+<!-- ================= 6. M3 JARAK SEBENARNYA ================= -->
+<section class="slide" id="s-m3" data-title="📏 Cara Menentukan Jarak Sebenarnya">
+ <div class="slide-inner">
+  <h2 class="stitle">📏 Materi 3 — Cara Menentukan Jarak Sebenarnya (JS)</h2>
+  <div class="tabs"><button class="tab active">📖 Materi</button><button class="tab">✏️ Latihan 10 Soal</button></div>
+  <div class="tabpane active">
+   <div class="grid2">
+    <div class="card">
+     <h3>📏 Rumus JS</h3>
+     <div class="formula">JS = JP × skala<br><small>(jarak sebenarnya = jarak di peta dikali penyebut skala)</small></div>
+     <div class="exbox">🗺️ Peta skala 1 : 300.000. JP dua kota = 8 cm.<br>JS = 8 × 300.000 = 2.400.000 cm = <b>24 km</b> ✅</div>
+     <div class="okbox">✅ Ingat: hasil dalam <b>cm</b> → bagi 100.000 untuk mengubah ke <b>km</b>, atau bagi 100 untuk <b>m</b>.</div>
+     <div class="warnbox">⚠️ Kalau ditanya "jarak SEBENARNYA", artinya dunia nyata — jawabannya pasti lebih BESAR dari JP!</div>
+    </div>
+    <div class="card">
+     <h3>🧪 Interaktif: Penggaris Digital 📐</h3>
+     <div class="selrow">Skala: <select id="m3skala" onchange="m3live()">
+       <option value="100000">1 : 100.000</option><option value="250000">1 : 250.000</option>
+       <option value="500000">1 : 500.000</option><option value="1000000">1 : 1.000.000</option></select>
+      &nbsp;Geser penggaris (JP): <input type="range" id="m3jp" min="1" max="12" value="4" oninput="m3live()"><span class="rangev" id="m3jpTxt">4 cm</span></div>
+     <div class="maparea">
+      <span class="city">🏙️</span>
+      <div class="roadwrap"><div id="m3map" class="measbar" style="width:24px"></div></div>
+      <span class="city">🏙️</span>
+     </div>
+     <button class="btn-check" onclick="jsHitung()" style="margin-top:8px">📏 Ukur &amp; Hitung JS!</button>
+     <div id="m3steps" class="steps"></div>
+     <div class="ubar" style="margin-top:8px"><div id="m3real" class="ufill f1" style="width:0">JS</div></div>
+     <div id="m3realTxt" class="res"></div>
+    </div>
+   </div>
+  </div>
+  <div class="tabpane"><div class="practice" id="pr3"></div></div>
+ </div>
+</section>
+
+<!-- ================= 7. M4 JARAK PADA PETA ================= -->
+<section class="slide" id="s-m4" data-title="✏️ Cara Menentukan Jarak pada Peta">
+ <div class="slide-inner">
+  <h2 class="stitle">✏️ Materi 4 — Cara Menentukan Jarak pada Peta (JP)</h2>
+  <div class="tabs"><button class="tab active">📖 Materi</button><button class="tab">✏️ Latihan 10 Soal</button></div>
+  <div class="tabpane active">
+   <div class="grid2">
+    <div class="card">
+     <h3>✏️ Rumus JP</h3>
+     <div class="formula">JP = JS ÷ skala<br><small>(jarak di peta = jarak sebenarnya dibagi penyebut skala)</small></div>
+     <div class="exbox">🗺️ JS = 45 km, skala 1 : 1.500.000.<br>JS = 4.500.000 cm → JP = 4.500.000 ÷ 1.500.000 = <b>3 cm</b> ✅</div>
+     <div class="okbox">✅ Kalau ditanya "jarak PADA PETA/gambar", artinya dunia gambar — jawabannya pasti lebih KECIL dari JS!</div>
+     <div class="exbox">🔍 Hubungan ketiganya: <b>Skala = JP : JS</b>. Kenal dua, bisa cari yang ketiga — seperti segitiga ajaib!</div>
+    </div>
+    <div class="card">
+     <h3>🧪 Interaktif: Mesin Penggambar Peta ✏️</h3>
+     <div class="selrow">Skala: <select id="m4skala" onchange="m4live()">
+       <option value="500000">1 : 500.000</option><option value="1000000" selected>1 : 1.000.000</option>
+       <option value="1500000">1 : 1.500.000</option><option value="3000000">1 : 3.000.000</option></select>
+      &nbsp;JS: <input type="range" id="m4js" min="10" max="200" step="5" value="60" oninput="m4live()"><span class="rangev" id="m4jsTxt">60 km</span></div>
+     <button class="btn-check" onclick="jpHitung()">✏️ Gambar di Peta!</button>
+     <div id="m4steps" class="steps"></div>
+     <div class="paper"><div class="drawline" id="m4line"></div><span class="pencil" id="m4pencil">✏️</span></div>
+     <div id="m4res" class="res"></div>
+     <p class="muted" style="margin-top:6px">👀 Coba ganti skala dengan JS tetap — lihat garisnya berubah! Makin "kecil" skala, makin pendek garisnya.</p>
+    </div>
+   </div>
+  </div>
+  <div class="tabpane"><div class="practice" id="pr4"></div></div>
+ </div>
+</section>
+
+<!-- ================= 8. M5 LUAS ================= -->
+<section class="slide" id="s-m5" data-title="⬜ Menentukan Luas Berdasarkan Skala">
+ <div class="slide-inner">
+  <h2 class="stitle">⬜ Materi 5 — Menentukan Luas Berdasarkan Skala pada Denah</h2>
+  <div class="tabs"><button class="tab active">📖 Materi</button><button class="tab">✏️ Latihan 10 Soal</button></div>
+  <div class="tabpane active">
+   <div class="grid2">
+    <div class="card">
+     <h3>⬜ Rahasia Luas: Skala DIKUADRATKAN!</h3>
+     <div class="formula">Luas sebenarnya = Luas denah × skala²<br><small>(contoh skala 1 : 500 → kalikan 500 × 500 = 250.000)</small></div>
+     <div class="exbox">🏠 Denah 1 : 500, luas kamar di denah 20 cm².<br>Luas sebenarnya = 20 × 500² = 20 × 250.000 = 5.000.000 cm² = <b>500 m²</b> ✅<br><small>(1 m² = 10.000 cm²)</small></div>
+     <div class="okbox">✅ Cara aman: hitung dulu <b>panjang &amp; lebar sebenarnya</b> (kali skala), baru kalikan keduanya!</div>
+     <button class="btn" onclick="sqDemo()">🔬 Mengapa dikuadratkan? (buka demo!)</button>
+     <div class="sqgrid" id="sqGrid"></div>
+     <p class="muted" id="sqCap" style="text-align:center">Skala 1 : 10 → 1 cm² di denah berisi 10 × 10 = <b>100 cm²</b> sebenarnya!</p>
+    </div>
+    <div class="card">
+     <h3>🧪 Interaktif: Kotak Ajaib Skala² ⬜</h3>
+     <div class="selrow">
+      Panjang: <input type="range" id="l5p" min="2" max="10" value="6" oninput="luasRender()"><span class="rangev" id="l5pTxt">6 cm</span><br>
+      Lebar: <input type="range" id="l5l" min="2" max="10" value="4" oninput="luasRender()"><span class="rangev" id="l5lTxt">4 cm</span>
+      &nbsp;Skala: <select id="l5sk" onchange="luasRender()">
+       <option value="100">1 : 100</option><option value="200">1 : 200</option>
+       <option value="500" selected>1 : 500</option></select>
+     </div>
+     <div class="l5flex">
+      <div style="text-align:center"><div class="l5rect" id="l5rect" style="width:66px;height:44px">Denah</div><p class="muted">di denah (cm)</p></div>
+      <div style="font-size:26px;color:#f59e0b;font-weight:800">→ ×skala² →</div>
+      <div style="text-align:center"><div class="l5big" id="l5big" style="width:120px;height:80px"><span id="l5bigTxt"></span></div><p class="muted">di dunia nyata (m)</p></div>
+     </div>
+     <div id="l5info" class="chain"></div>
+    </div>
+   </div>
+  </div>
+  <div class="tabpane"><div class="practice" id="pr5"></div></div>
+ </div>
+</section>
+
+<!-- ================= 9. KUIS DUEL ================= -->
+<section class="slide" id="s-quiz" data-title="⚔️ Kuis Duel Skala">
+ <div class="slide-inner">
+  <h2 class="stitle">⚔️ Kuis Duel Skala — Siapa Lebih Jago?</h2>
+  <div class="card" style="margin-bottom:10px">
+   <p style="font-size:14px;line-height:1.7"><b>📋 Cara main:</b> pilih giliran siapa yang memilih → klik nomor soal → soal muncul di panel siswa tersebut → pilih jawaban → tekan <b>✔ Cek Jawaban</b> → lihat <b>📖 Pembahasan</b>. Soal yang sudah diambil <b>tidak bisa diambil lagi</b>! Jawaban benar = poin (Mudah +10, Sedang +20, HOTS +30). Yang berhasil menjawab boleh memilih soal berikutnya! 🏆</p>
+  </div>
+  <div class="scoreboard">
+   <div class="scard s1">🟣 <span data-n1>Siswa 1</span><b id="score1">0</b></div>
+   <div class="vs2">VS</div>
+   <div class="scard s2"><b id="score2">0</b><span data-n2>Siswa 2</span> 🔵</div>
+  </div>
+  <div class="pickrow">Giliran memilih:
+   <button class="turnbtn" id="turn1" onclick="setTurn(1)">🟣 <span data-n1>Siswa 1</span></button>
+   <button class="turnbtn" id="turn2" onclick="setTurn(2)">🔵 <span data-n2>Siswa 2</span></button>
+   <button class="btn" onclick="quizReset()">🔄 Reset Kuis</button>
+  </div>
+  <div class="legend"><span class="chip c0">Hijau = Mudah (+10)</span><span class="chip c1">Kuning = Sedang (+20)</span><span class="chip c2">Merah = HOTS (+30)</span></div>
+  <div class="numgrid" id="numGrid"></div>
+  <div id="quizProg">📊 Soal dikerjakan: 0 / 25</div>
+  <div class="duel" style="margin-top:10px">
+   <div class="duel-panel p1" id="panel1"></div>
+   <div class="duel-panel p2" id="panel2"></div>
+  </div>
+  <div id="quizResult"></div>
+ </div>
+</section>
+
+<!-- ================= 10. GAME ================= -->
+<section class="slide" id="s-game" data-title="🎈 Game: Ekspedisi Balon Harta Karun (Kerja Sama!)">
+ <div class="slide-inner">
+  <h2 class="stitle">🎈 Exit Ticket: Ekspedisi Balon Harta Karun — Kerja Sama Tim!</h2>
+  <div class="card" style="margin-bottom:10px">
+   <p style="font-size:14px;line-height:1.7"><b>📋 Aturan:</b> Pulau harta karun berjarak <b>X km</b> dari kamp kalian. <span data-n1>Siswa 1</span> memilih <b>SKALA peta</b> 🟣, <span data-n2>Siswa 2</span> memilih <b>JARAK PADA PETA (cm)</b> 🔵. Syarat terbang: <b>skala × jarak peta harus TEPAT sama dengan jarak sebenarnya</b>! Diskusikan dulu, baru klik — kalau salah, balon goblok... eh, goyang! 😄 Kumpulkan 5 misi = 500 poin tim! 🏝️💰</p>
+  </div>
+  <div class="game-wrap">
+   <div>
+    <div class="gsky">
+     <span class="cloud" style="left:15%;top:12%">☁️</span>
+     <span class="cloud" style="left:45%;top:8%">☁️</span>
+     <span class="cloud" style="left:65%;top:18%">☁️</span>
+     <div class="gsea"></div>
+     <div class="balloon" id="gBalloon">🎈</div>
+     <div class="island">🏝️💰</div>
+    </div>
+    <div class="gstat">
+     <div class="gs">Skor Tim<b id="gScore">0</b></div>
+     <div class="gs">Misi Selesai<b id="gStars">☆☆☆☆☆</b></div>
+    </div>
+    <div class="gmsg" id="gMsg">Isi skala &amp; jarak peta, lalu terbangkan balon! 🎈</div>
+   </div>
+   <div>
+    <div class="missioncard" id="gMission"></div>
+    <div class="gops"><h4>🟣 Skala Peta — <span data-n1>Siswa 1</span></h4><div id="gScOps"></div></div>
+    <div class="gops"><h4>🔵 Jarak pada Peta — <span data-n2>Siswa 2</span></h4><div id="gJpOps"></div></div>
+    <button class="gbtn btn-launch" onclick="gFly()">🎈 TERBANGKAN BALON!</button>
+    <button class="gbtn" style="background:#64748b" onclick="gStart()">🔄 Main Lagi dari Misi 1</button>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- ================= 11. KESIMPULAN ================= -->
+<section class="slide" id="s-conclusion" data-title="📝 Kesimpulan">
+ <div class="slide-inner">
+  <h2 class="stitle">📝 Kesimpulan — Apa yang Kita Pelajari Hari Ini?</h2>
+  <div class="grid3">
+   <div class="kcard">🗺️ <b>Skala</b> = perbandingan <b>JP : JS</b> — jarak pada peta terhadap jarak sebenarnya, dengan satuan yang sama.</div>
+   <div class="kcard">🧮 <b>Menentukan skala</b>: samakan satuan → tulis JP : JS → bagi sampai suku pertama jadi 1.</div>
+   <div class="kcard">📏 <b>JS = JP × skala</b> — untuk mencari jarak sebenarnya (jawaban lebih BESAR).</div>
+   <div class="kcard">✏️ <b>JP = JS ÷ skala</b> — untuk mencari jarak pada peta (jawaban lebih KECIL).</div>
+   <div class="kcard">⬜ <b>Luas pakai skala KUADRAT</b>: Luas sebenarnya = luas denah × skala². Ingat 1 m² = 10.000 cm²!</div>
+   <div class="kcard">🔁 Semuanya berdiri di atas <b>rasio</b> yang sudah kalian kuasai — skala, senilai, berbalik nilai adalah saudara satu keluarga!</div>
+  </div>
+  <div class="goldstrip">🌟 Langkah Emas: 1) Samakan satuan (1 km = 100.000 cm) → 2) Tulis skala = JP : JS → 3) Hitung yang ditanya 🌟</div>
+  <div class="card">
+   <h3>🔜 Berikutnya…</h3>
+   <p style="font-size:14.5px;line-height:1.7">Skala adalah jembatan menuju <b>Perbandingan Senilai</b> dan <b>Perbandingan Berbalik Nilai</b>. Ketiganya memakai ide yang sama: <b>perbandingan yang setia</b>! 💪</p>
+  </div>
+ </div>
+</section>
+
+<!-- ================= 12. REFLEKSI ================= -->
+<section class="slide" id="s-reflection" data-title="🪞 Refleksi">
+ <div class="slide-inner">
+  <h2 class="stitle">🪞 Refleksi — Bagaimana Perasaanmu Hari Ini?</h2>
+  <div class="grid2">
+   <div class="card">
+    <h3>😊 Pilih perasaanmu!</h3>
+    <div class="emoji-row">
+     <span class="emo" onclick="refMood(0)">🤩</span>
+     <span class="emo" onclick="refMood(1)">😄</span>
+     <span class="emo" onclick="refMood(2)">🙂</span>
+     <span class="emo" onclick="refMood(3)">😕</span>
+     <span class="emo" onclick="refMood(4)">😫</span>
+    </div>
+    <h3 style="margin-top:12px">✅ Yang paling kamu sukai (boleh pilih lebih dari satu):</h3>
+    <div class="check-row">
+     <label><input type="checkbox"> Materi interaktif 🧪</label>
+     <label><input type="checkbox"> Latihan soal ✏️</label>
+     <label><input type="checkbox"> Kuis duel ⚔️</label>
+     <label><input type="checkbox"> Game balon 🎈</label>
+    </div>
+   </div>
+   <div class="card">
+    <h3>💭 Tulis refleksimu!</h3>
+    <p class="muted">Hari ini aku belajar… / Bagian yang masih membingungkan adalah… / Aku ingin lebih banyak latihan tentang…</p>
+    <textarea id="refText" placeholder="Tulis pendapatmu di sini…"></textarea>
+    <div style="margin-top:10px"><button class="btn-start" style="font-size:15px;padding:12px 26px" onclick="refSave()">💾 Simpan Refleksi</button></div>
+    <div id="refSaved"></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- ================= 13. THANKS ================= -->
+<section class="slide" id="s-thanks" data-title="🎉 Terima Kasih!">
+ <div class="cover">
+  <div class="float">🎉 🌟 🎊</div>
+  <h1>Thank You <span class="grad">for Today!</span></h1>
+  <p class="subtitle">Kerja bagus, <b data-n1>Siswa 1</b> &amp; <b data-n2>Siswa 2</b>! 👏👏</p>
+  <div class="card" style="max-width:520px">
+   <p style="font-size:15px;line-height:1.8">Hari ini kalian sudah:<br>🗺️ Memahami pengertian &amp; notasi skala<br>🧮 Menentukan skala dari JP dan JS<br>📏 Menghitung jarak sebenarnya<br>✏️ Menghitung jarak pada peta<br>⬜ Menghitung luas dengan skala kuadrat<br>🎈 Serta menerbangkan balon ekspedisi bersama-sama!<br><br>Sampai jumpa di petualangan Perbandingan Senilai! 🚀</p>
+  </div>
+  <button class="btn-start" onclick="go(0)">🏠 Kembali ke Sampul</button>
+ </div>
+</section>
+
+</main>
+
+<!-- ===== BOTTOM NAV ===== -->
+<nav class="bottomnav">
+ <button class="navbtn ghost" onclick="go(S.cur-1)">← Sebelumnya</button>
+ <button class="navbtn" onclick="go(S.cur+1)">Berikutnya →</button>
+</nav>
+
+<div id="toast"></div>
+<div id="fx"></div>
+
+<script>
+/* ================= STATE & UTIL ================= */
+const S={names:['Siswa 1','Siswa 2'],cur:0};
+const $=id=>document.getElementById(id);
+const WORD=['nol','satu','dua','tiga','empat','lima','enam','tujuh','delapan','sembilan','sepuluh'];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const shuf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+function fmtNum(n){const r=Math.round(n);return Math.abs(n-r)<1e-9?r.toLocaleString('id-ID'):(Math.round(n*100)/100).toLocaleString('id-ID');}
+
+/* Suara */
+let AC=null;
+function tone(f,d=0.12,type='sine',v=0.05,delay=0){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.value=f;o.connect(g);g.connect(AC.destination);const s=AC.currentTime+delay;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(0.0001,s+d);o.start(s);o.stop(s+d+0.02);}catch(e){}}
+const sndClick=()=>tone(520,.06,'triangle',.03);
+const sndOK=()=>{tone(660,.12);tone(880,.18,'sine',.05,.11);};
+const sndNO=()=>tone(200,.22,'sawtooth',.04);
+
+function confetti(n){const E=['🎉','⭐','✨','🎈','🎊','🌟','🗺️','📏','💰'];for(let i=0;i<n;i++){const p=document.createElement('span');p.className='fxp';p.textContent=E[Math.floor(Math.random()*E.length)];p.style.left=Math.random()*100+'vw';p.style.fontSize=(14+Math.random()*18)+'px';p.style.animationDuration=(2+Math.random()*2.2)+'s';p.style.animationDelay=(Math.random()*.5)+'s';$('fx').appendChild(p);p.addEventListener('animationend',()=>p.remove());}}
+let toastT;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2400);}
+
+/* ================= NAVIGASI ================= */
+function go(i){const sl=document.querySelectorAll('.slide');i=Math.max(0,Math.min(sl.length-1,i));sl[S.cur].classList.remove('active');S.cur=i;sl[i].classList.add('active');sl[i].scrollTop=0;$('progressBar').style.width=((i+1)/sl.length*100)+'%';$('slideCounter').textContent=(i+1)+' / '+sl.length;if(sl[i].id==='s-thanks')confetti(40);sndClick();}
+function buildMenu(){$('menuList').innerHTML=[...document.querySelectorAll('.slide')].map((s,i)=>`<button class="menu-item" onclick="closeMenu();go(${i})">${s.dataset.title||'Slide '+(i+1)}</button>`).join('');}
+const openMenu=()=>$('menuOv').classList.add('open');
+const closeMenu=()=>$('menuOv').classList.remove('open');
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;if(e.key==='ArrowRight'||e.key==='PageDown')go(S.cur+1);else if(e.key==='ArrowLeft'||e.key==='PageUp')go(S.cur-1);});
+
+function refreshNames(){document.querySelectorAll('[data-n1]').forEach(e=>e.textContent=S.names[0]);document.querySelectorAll('[data-n2]').forEach(e=>e.textContent=S.names[1]);}
+
+/* ================= MESIN LATIHAN ================= */
+const PRACTICE={};
+function renderPractice(cid,qs){PRACTICE[cid]={qs,picked:Array(qs.length).fill(-1),done:Array(qs.length).fill(false),correct:0};
+ let html='';qs.forEach((it,i)=>{html+=`<div class="qcard" id="${cid}-q${i}"><span class="qnum">Soal ${i+1}</span><div class="qtext">${it.q}</div><div class="opts">${it.opts.map((o,j)=>`<button class="opt" onclick="pickOpt('${cid}',${i},${j})">${'ABCD'[j]}. ${o}</button>`).join('')}</div><div class="qact"><button class="btn-check" onclick="checkPr('${cid}',${i})">✔ Cek Jawaban</button><button class="btn-exp hidden" id="${cid}-expbtn${i}" onclick="toggleExp('${cid}',${i})">📖 Pembahasan</button></div><div class="fb" id="${cid}-fb${i}"></div><div class="exp hidden" id="${cid}-exp${i}">💡 ${it.exp}</div></div>`;});
+ html+=`<div class="pscore" id="${cid}-score">📊 Progres: 0/${qs.length} dikerjakan • ✅ Benar: 0</div>`;
+ $(cid).innerHTML=html;}
+function pickOpt(cid,i,j){const P=PRACTICE[cid];if(P.done[i])return;P.picked[i]=j;$(cid+'-q'+i).querySelectorAll('.opt').forEach((b,x)=>b.classList.toggle('sel',x===j));sndClick();}
+function checkPr(cid,i){const P=PRACTICE[cid];if(P.done[i])return;if(P.picked[i]<0){toast('Pilih salah satu jawaban dulu! ✋');return;}
+ P.done[i]=true;const it=P.qs[i];$(cid+'-q'+i).querySelectorAll('.opt').forEach((b,x)=>{b.disabled=true;if(x===it.ans)b.classList.add('right');});
+ const fb=$(cid+'-fb'+i);
+ if(P.picked[i]===it.ans){fb.className='fb good';fb.textContent='🎉 Benar! Kerja bagus!';P.correct++;sndOK();confetti(8);}else{fb.className='fb bad';fb.textContent='😢 Belum tepat. Perhatikan pembahasan, ya!';sndNO();}
+ $(cid+'-expbtn'+i).classList.remove('hidden');$(cid+'-exp'+i).classList.remove('hidden');
+ const done=P.done.filter(Boolean).length;
+ $(cid+'-score').textContent=`📊 Progres: ${done}/${P.qs.length} dikerjakan • ✅ Benar: ${P.correct}`;}
+function toggleExp(cid,i){$(cid+'-exp'+i).classList.toggle('hidden');}
+
+/* ================= DATA LATIHAN (50 SOAL) ================= */
+const L1=[
+{q:"Makna dari skala peta 1 : 500.000 adalah…",opts:["1 cm pada peta mewakili 5 km jarak sebenarnya","1 cm pada peta mewakili 50 km jarak sebenarnya","1 cm pada peta mewakili 500 km jarak sebenarnya","1 cm pada peta mewakili 5.000 km jarak sebenarnya"],ans:0,exp:"Skala 1 : 500.000 artinya 1 cm mewakili 500.000 cm. Karena 500.000 cm = 5 km, maka 1 cm mewakili 5 km."},
+{q:"Skala 1 : 100.000 artinya 1 cm pada peta mewakili jarak sebenarnya sejauh…",opts:["1 m","100 m","1 km","10 km"],ans:2,exp:"100.000 cm = 1.000 m = 1 km."},
+{q:"Notasi skala yang benar adalah…",opts:["jarak sebenarnya : jarak pada peta","jarak pada peta : jarak sebenarnya","jarak sebenarnya × jarak pada peta","jarak sebenarnya − jarak pada peta"],ans:1,exp:"Skala ditulis JP : JS — jarak pada peta selalu ditulis lebih dulu."},
+{q:"Pada skala 1 : 25.000, angka 1 menunjukkan…",opts:["jarak sebenarnya","jarak pada peta","selisih jarak","jumlah jarak"],ans:1,exp:"Suku pertama skala selalu menyatakan jarak pada peta (biasanya 1 cm)."},
+{q:"Pada skala 1 : 50.000, jarak 2 cm pada peta mewakili jarak sebenarnya…",opts:["500 m","1 km","2 km","5 km"],ans:1,exp:"1 cm = 50.000 cm = 500 m, jadi 2 cm = 1.000 m = 1 km."},
+{q:"'Setiap 1 cm pada gambar mewakili 4 m jarak sebenarnya.' Skala tersebut adalah…",opts:["1 : 4","1 : 40","1 : 400","1 : 4.000"],ans:2,exp:"4 m = 400 cm, sehingga skalanya 1 : 400."},
+{q:"Skala 1 : 200.000 artinya 1 cm pada peta mewakili…",opts:["200 m","2 km","20 km","200 km"],ans:1,exp:"200.000 cm = 2.000 m = 2 km."},
+{q:"Skala 1 : 10 artinya…",opts:["1 cm pada gambar mewakili 10 cm jarak sebenarnya","1 cm pada gambar mewakili 10 m jarak sebenarnya","1 cm pada gambar mewakili 10 km jarak sebenarnya","gambar sama persis dengan ukuran aslinya"],ans:0,exp:"Skala 1 : 10 → 1 cm di gambar = 10 cm sebenarnya (sering dipakai pada gambar teknis)."},
+{q:"Skala 1 : 1.000.000 artinya 1 cm pada peta mewakili…",opts:["1 km","10 km","100 km","1.000 km"],ans:1,exp:"1.000.000 cm = 10 km."},
+{q:"Berikut yang BUKAN merupakan penerapan skala adalah…",opts:["peta wilayah Indonesia","denah rumah","maket gedung","daftar harga buku"],ans:3,exp:"Daftar harga tidak memperkecil/memperbesar ukuran benda, jadi bukan penerapan skala."}];
+const L2=[
+{q:"Jarak sebenarnya antara kota A dan B adalah 60 km. Jika jarak pada peta adalah 3 cm, skala peta tersebut adalah…",opts:["1 : 20.000","1 : 200.000","1 : 2.000.000","1 : 20.000.000"],ans:2,exp:"JS = 60 km = 6.000.000 cm. Skala = JP : JS = 3 : 6.000.000 = 1 : 2.000.000."},
+{q:"Pada sebuah denah, tertulis keterangan bahwa setiap 1 cm mewakili 20 km. Skala denah tersebut adalah…",opts:["1 : 20.000","1 : 200.000","1 : 2.000.000","1 : 20.000.000"],ans:2,exp:"20 km = 2.000.000 cm, sehingga skala = 1 : 2.000.000."},
+{q:"Jarak 15 cm pada peta mewakili jarak sebenarnya sejauh 750 km. Skala peta tersebut adalah…",opts:["1 : 5.000.000","1 : 500.000","1 : 50.000","1 : 5.000"],ans:0,exp:"JS = 750 km = 75.000.000 cm. Skala = 15 : 75.000.000 = 1 : 5.000.000."},
+{q:"Jarak 4 cm pada peta mewakili jarak sebenarnya 8 km. Skala peta tersebut adalah…",opts:["1 : 200.000","1 : 2.000.000","1 : 20.000","1 : 32.000"],ans:0,exp:"8 km = 800.000 cm → 4 : 800.000 = 1 : 200.000."},
+{q:"Jarak 5 cm pada peta mewakili jarak sebenarnya 25 km. Skala peta tersebut adalah…",opts:["1 : 5.000.000","1 : 125.000","1 : 50.000","1 : 500.000"],ans:3,exp:"25 km = 2.500.000 cm → 5 : 2.500.000 = 1 : 500.000."},
+{q:"Jarak 6 cm pada peta mewakili jarak sebenarnya 12 km. Skala peta tersebut adalah…",opts:["1 : 720.000","1 : 20.000","1 : 200.000","1 : 2.000.000"],ans:2,exp:"12 km = 1.200.000 cm → 6 : 1.200.000 = 1 : 200.000."},
+{q:"Pada denah, 1 cm mewakili 5 m jarak sebenarnya. Skala denah tersebut adalah…",opts:["1 : 500","1 : 5.000","1 : 50","1 : 500.000"],ans:0,exp:"5 m = 500 cm, sehingga skala = 1 : 500."},
+{q:"Jarak 10 cm pada gambar mewakili jarak sebenarnya 40 m. Skala gambar tersebut adalah…",opts:["1 : 4.000","1 : 400","1 : 40","1 : 400.000"],ans:1,exp:"40 m = 4.000 cm → 10 : 4.000 = 1 : 400."},
+{q:"Model pesawat dibuat dengan panjang 40 cm, sedangkan panjang pesawat sebenarnya 30 m. Skala model tersebut adalah…",opts:["1 : 75","1 : 750","1 : 7.500","1 : 34"],ans:0,exp:"30 m = 3.000 cm → skala = 40 : 3.000 = 1 : 75."},
+{q:"Jarak 8 cm pada peta mewakili jarak sebenarnya 16 km. Skala peta tersebut adalah…",opts:["1 : 2.000.000","1 : 2.000","1 : 20.000","1 : 200.000"],ans:3,exp:"16 km = 1.600.000 cm → 8 : 1.600.000 = 1 : 200.000."}];
+const L3=[
+{q:"Sebuah peta memiliki skala 1 : 300.000. Jika jarak dua kota pada peta 8 cm, jarak sebenarnya adalah…",opts:["2,4 km","24 km","240 km","2.400 km"],ans:1,exp:"JS = JP × skala = 8 × 300.000 = 2.400.000 cm = 24 km."},
+{q:"Peta berskala 1 : 400.000 menunjukkan jarak kota C dan D sejauh 12,5 cm. Jarak sesungguhnya adalah…",opts:["50 km","500 km","125 km","250 km"],ans:0,exp:"JS = 12,5 × 400.000 = 5.000.000 cm = 50 km."},
+{q:"Skala peta 1 : 100.000. Jarak dua desa pada peta 7 cm. Jarak sebenarnya…",opts:["0,7 km","7 km","70 km","700 km"],ans:1,exp:"JS = 7 × 100.000 = 700.000 cm = 7 km."},
+{q:"Skala peta 1 : 50.000. Jarak dua sekolah pada peta 6 cm. Jarak sebenarnya…",opts:["0,3 km","3 km","30 km","300 km"],ans:1,exp:"JS = 6 × 50.000 = 300.000 cm = 3 km."},
+{q:"Tinggi sebuah gedung pada maket berskala 1 : 200 adalah 15 cm. Tinggi gedung sebenarnya…",opts:["15 meter","20 meter","30 meter","300 meter"],ans:2,exp:"JS = 15 × 200 = 3.000 cm = 30 meter."},
+{q:"Skala peta 1 : 1.000.000. Jarak dua kota pada peta 5 cm. Jarak sebenarnya…",opts:["5 km","50 km","500 km","5.000 km"],ans:1,exp:"JS = 5 × 1.000.000 = 5.000.000 cm = 50 km."},
+{q:"Skala peta 1 : 25.000. Jarak dua rumah pada peta 12 cm. Jarak sebenarnya…",opts:["3 km","30 km","300 km","3.000 km"],ans:0,exp:"JS = 12 × 25.000 = 300.000 cm = 3 km."},
+{q:"Denah berskala 1 : 500. Panjang sebuah ruangan pada denah 8 cm. Panjang sebenarnya…",opts:["4 m","40 m","400 m","4.000 m"],ans:1,exp:"JS = 8 × 500 = 4.000 cm = 40 m."},
+{q:"Skala peta 1 : 2.000.000. Jarak dua kota pada peta 9 cm. Jarak sebenarnya…",opts:["18 km","180 km","1.800 km","18.000 km"],ans:1,exp:"JS = 9 × 2.000.000 = 18.000.000 cm = 180 km."},
+{q:"Model mobil dibuat dengan skala 1 : 10. Panjang model 35 cm. Panjang mobil sebenarnya…",opts:["0,35 m","3,5 m","35 m","350 m"],ans:1,exp:"JS = 35 × 10 = 350 cm = 3,5 m."}];
+const L4=[
+{q:"Jarak sebenarnya kota P ke kota Q adalah 45 km. Jika digambar dengan skala 1 : 1.500.000, jarak pada peta adalah…",opts:["3 cm","4 cm","5 cm","6 cm"],ans:0,exp:"JS = 4.500.000 cm → JP = 4.500.000 ÷ 1.500.000 = 3 cm."},
+{q:"Jarak sebenarnya dua gedung adalah 100 km. Digambar dengan skala 1 : 2.500.000, jarak pada gambar adalah…",opts:["2 cm","4 cm","5 cm","8 cm"],ans:1,exp:"JS = 10.000.000 cm → JP = 10.000.000 ÷ 2.500.000 = 4 cm."},
+{q:"Tinggi tiang bendera sebenarnya 12 meter. Digambar dengan skala 1 : 80, tinggi pada gambar adalah…",opts:["10 cm","12 cm","15 cm","20 cm"],ans:2,exp:"JS = 1.200 cm → JP = 1.200 ÷ 80 = 15 cm."},
+{q:"Jarak sebenarnya 20 km digambar dengan skala 1 : 500.000. Jarak pada peta…",opts:["4 cm","5 cm","6 cm","8 cm"],ans:0,exp:"JS = 2.000.000 cm → JP = 2.000.000 ÷ 500.000 = 4 cm."},
+{q:"Jarak sebenarnya 60 km digambar dengan skala 1 : 1.500.000. Jarak pada peta…",opts:["5 cm","4 cm","6 cm","8 cm"],ans:1,exp:"JS = 6.000.000 cm → JP = 6.000.000 ÷ 1.500.000 = 4 cm."},
+{q:"Panjang meja sebenarnya 5 m digambar dengan skala 1 : 100. Panjang pada gambar…",opts:["0,5 cm","5 cm","50 cm","500 cm"],ans:1,exp:"JS = 500 cm → JP = 500 ÷ 100 = 5 cm."},
+{q:"Jarak sebenarnya dua kota 5 km digambar pada peta berskala 1 : 250.000. Jarak pada peta…",opts:["1 cm","2 cm","4 cm","5 cm"],ans:1,exp:"JS = 500.000 cm → JP = 500.000 ÷ 250.000 = 2 cm."},
+{q:"Jarak sebenarnya 75 km digambar dengan skala 1 : 2.500.000. Jarak pada peta…",opts:["3 cm","4 cm","6 cm","8 cm"],ans:0,exp:"JS = 7.500.000 cm → JP = 7.500.000 ÷ 2.500.000 = 3 cm."},
+{q:"Tinggi gedung 60 m digambar dengan skala 1 : 1.200. Tinggi pada gambar…",opts:["5 cm","6 cm","12 cm","50 cm"],ans:0,exp:"JS = 6.000 cm → JP = 6.000 ÷ 1.200 = 5 cm."},
+{q:"Jarak sebenarnya 90 km digambar dengan skala 1 : 3.000.000. Jarak pada peta…",opts:["2 cm","3 cm","6 cm","9 cm"],ans:1,exp:"JS = 9.000.000 cm → JP = 9.000.000 ÷ 3.000.000 = 3 cm."}];
+const L5=[
+{q:"Sebuah taman digambar pada denah berskala 1 : 250 dengan ukuran 8 cm × 6 cm. Luas taman sebenarnya adalah…",opts:["30 m²","120 m²","300 m²","480 m²"],ans:2,exp:"Panjang = 8 × 250 = 20 m; lebar = 6 × 250 = 15 m. Luas = 20 × 15 = 300 m²."},
+{q:"Luas sebuah persegi panjang pada denah 20 cm². Jika skalanya 1 : 500, luas sebenarnya adalah…",opts:["100 m²","500 m²","1.000 m²","5.000 m²"],ans:1,exp:"Luas sebenarnya = 20 × 500² = 20 × 250.000 = 5.000.000 cm² = 500 m²."},
+{q:"Denah berskala 1 : 100. Sebuah kamar berukuran 5 cm × 4 cm pada denah. Luas kamar sebenarnya…",opts:["20 m²","200 m²","2.000 m²","2 m²"],ans:0,exp:"Panjang = 5 m, lebar = 4 m → luas = 20 m²."},
+{q:"Sebidang tanah berbentuk persegi memiliki keliling pada denah 24 cm. Jika skala denah 1 : 300, luas tanah sebenarnya adalah…",opts:["324 m²","144 m²","72 m²","36 m²"],ans:0,exp:"Sisi denah = 24 ÷ 4 = 6 cm → sisi sebenarnya = 1.800 cm = 18 m. Luas = 18 × 18 = 324 m²."},
+{q:"Denah berskala 1 : 200. Persegi panjang berukuran 6 cm × 3 cm pada denah. Luas sebenarnya…",opts:["36 m²","72 m²","720 m²","7.200 m²"],ans:1,exp:"Panjang = 12 m, lebar = 6 m → luas = 72 m². (Atau 18 cm² × 200² = 720.000 cm² = 72 m².)"},
+{q:"Luas bangunan pada denah 15 cm² dengan skala 1 : 200. Luas sebenarnya…",opts:["30 m²","60 m²","600 m²","6.000 m²"],ans:1,exp:"Luas sebenarnya = 15 × 200² = 15 × 40.000 = 600.000 cm² = 60 m²."},
+{q:"Denah berskala 1 : 100. Taman berukuran 10 cm × 8 cm pada denah. Luas taman sebenarnya…",opts:["80 m²","800 m²","8.000 m²","8 m²"],ans:0,exp:"Panjang = 10 m, lebar = 8 m → luas = 80 m²."},
+{q:"Luas lapangan sebenarnya 500 m² digambar dengan skala 1 : 500. Luas lapangan pada denah…",opts:["2 cm²","20 cm²","200 cm²","2.000 cm²"],ans:1,exp:"500 m² = 5.000.000 cm². Luas denah = 5.000.000 ÷ 500² = 5.000.000 ÷ 250.000 = 20 cm²."},
+{q:"Kebun berbentuk persegi panjang dengan panjang 80 m dan lebar 60 m. Pada denah, luasnya menjadi 12 cm². Skala denah tersebut adalah…",opts:["1 : 400","1 : 2.000","1 : 4.000","1 : 40.000"],ans:1,exp:"Luas sebenarnya = 4.800 m² = 48.000.000 cm². Skala² = 12/48.000.000 = 1/4.000.000 → skala = 1 : 2.000."},
+{q:"Denah berskala 1 : 50. Sebuah meja berukuran 3 cm × 2 cm pada denah. Luas meja sebenarnya…",opts:["1,5 m²","15 m²","150 m²","0,15 m²"],ans:0,exp:"Panjang = 150 cm = 1,5 m; lebar = 100 cm = 1 m. Luas = 1,5 m². (Atau 6 cm² × 2.500 = 15.000 cm² = 1,5 m².)"}];
+
+/* ================= WIDGET M1: ZOOM PETA ================= */
+const ZSC=[100000,200000,500000,1000000,2000000];let zIdx=1;
+function zoomRender(){const N=ZSC[zIdx],jp=6000000/N;
+ $('zoomBar').style.width=Math.min(400,Math.round(jp*6))+'px';
+ $('zoomNota').textContent='1 : '+N.toLocaleString('id-ID');
+ $('zoomJP').textContent=fmtNum(jp);
+ $('zoomMean').textContent=`1 cm di peta = ${N.toLocaleString('id-ID')} cm = ${N/100000} km jarak sebenarnya`;
+ document.querySelectorAll('.zsbtn').forEach((b,i)=>b.classList.toggle('sel',i===zIdx));}
+function zoomSet(i){zIdx=i;zoomRender();sndClick();}
+
+/* ================= WIDGET M2: KALKULATOR SKALA ================= */
+function skPreset(jp,js,u){$('skJP').value=jp;$('skJS').value=js;$('skUnit').value=u;skalaHitung();}
+function skalaHitung(){const jp=parseFloat($('skJP').value),js=parseFloat($('skJS').value),u=+$('skUnit').value;
+ const out=$('skOut'),st=$('skSteps');
+ if(!(jp>0)||!(js>0)){out.textContent='⚠️ Isi jarak pada peta dan jarak sebenarnya dengan angka positif!';st.innerHTML='';return;}
+ const jscm=js*u,n=jscm/jp;
+ st.innerHTML=`<div class="step">1️⃣ Samakan satuan: JS = ${js} ${u===100000?'km':'m'} = <b>${jscm.toLocaleString('id-ID')} cm</b></div><div class="step">2️⃣ Skala = JP : JS = ${jp} : ${jscm.toLocaleString('id-ID')}</div><div class="step">3️⃣ Bagi kedua suku dengan ${jp} → suku pertama menjadi 1</div>`;
+ out.innerHTML=`🧭 Skala = <b class="bignum">1 : ${fmtNum(n)}</b>`;
+ if(Math.abs(n-Math.round(n))<1e-9){sndOK();confetti(8);}else sndClick();}
+
+/* ================= WIDGET M3: PENGGARIS DIGITAL ================= */
+function m3live(){const jp=+$('m3jp').value;$('m3jpTxt').textContent=jp+' cm';$('m3map').style.width=(jp*6)+'px';$('m3steps').innerHTML='';$('m3real').style.width='0px';$('m3realTxt').textContent='';}
+function jsHitung(){const jp=+$('m3jp').value,N=+$('m3skala').value;
+ const jscm=jp*N,jskm=jscm/100000;
+ $('m3steps').innerHTML=`<div class="step">1️⃣ JP terukur di peta = <b>${jp} cm</b></div><div class="step">2️⃣ JS = JP × skala = ${jp} × ${N.toLocaleString('id-ID')} = <b>${jscm.toLocaleString('id-ID')} cm</b></div><div class="step">3️⃣ Ubah ke km: ${jscm.toLocaleString('id-ID')} ÷ 100.000 = <b class="okc">${fmtNum(jskm)} km</b> 🎉</div>`;
+ $('m3real').style.width=Math.min(100,jskm/2)+'%';
+ $('m3realTxt').textContent=`📏 Jarak sebenarnya: ${fmtNum(jskm)} km`;
+ sndOK();}
+
+/* ================= WIDGET M4: MESIN PENGGAMBAR ================= */
+function m4live(){const js=+$('m4js').value;$('m4jsTxt').textContent=js+' km';$('m4steps').innerHTML='';const l=$('m4line');l.style.transition='none';l.style.width='0px';$('m4pencil').style.left='0px';$('m4res').textContent='';}
+function jpHitung(){const js=+$('m4js').value,N=+$('m4skala').value;
+ const jscm=js*100000,jp=jscm/N;
+ $('m4steps').innerHTML=`<div class="step">1️⃣ JS = ${js} km = <b>${jscm.toLocaleString('id-ID')} cm</b></div><div class="step">2️⃣ JP = JS ÷ skala = ${jscm.toLocaleString('id-ID')} ÷ ${N.toLocaleString('id-ID')} = <b class="okc">${fmtNum(jp)} cm</b></div>`;
+ const px=Math.min(400,jp*6),l=$('m4line');
+ l.style.transition='none';l.style.width='0px';void l.offsetWidth;
+ l.style.transition='width 1s ease';l.style.width=px+'px';
+ $('m4pencil').style.left=px+'px';
+ $('m4res').textContent=`✏️ Garis sepanjang ${fmtNum(jp)} cm berhasil digambar di peta!`;
+ sndOK();confetti(6);}
+
+/* ================= WIDGET M5: LUAS ================= */
+function luasRender(){const p=+$('l5p').value,l=+$('l5l').value,N=+$('l5sk').value;
+ $('l5pTxt').textContent=p+' cm';$('l5lTxt').textContent=l+' cm';
+ $('l5rect').style.width=(p*11)+'px';$('l5rect').style.height=(l*11)+'px';
+ const pm=p*N/100,lm=l*N/100,la=p*l*N*N,lam=la/10000;
+ $('l5info').innerHTML=`Denah: ${p} × ${l} = <b>${p*l} cm²</b> • Skala 1 : ${N.toLocaleString('id-ID')}<br>Panjang sebenarnya = ${p} × ${N} = ${(p*N).toLocaleString('id-ID')} cm = <b>${fmtNum(pm)} m</b> • Lebar sebenarnya = <b>${fmtNum(lm)} m</b><br>Luas sebenarnya = ${fmtNum(pm)} × ${fmtNum(lm)} = <b class="okc">${lam.toLocaleString('id-ID')} m²</b><br><small>(cara cepat: ${p*l} cm² × ${N.toLocaleString('id-ID')}² = ${lam.toLocaleString('id-ID')} m² ✓)</small>`;
+ const mx=Math.max(pm,lm);
+ $('l5big').style.width=Math.max(46,pm/mx*230)+'px';
+ $('l5big').style.height=Math.max(46,lm/mx*230)+'px';
+ $('l5bigTxt').textContent=`${fmtNum(pm)} m × ${fmtNum(lm)} m`;}
+function sqDemo(){const g=$('sqGrid');g.classList.toggle('open');
+ if(g.classList.contains('open')&&!g.dataset.built){let h='';for(let i=0;i<100;i++)h+=`<span style="animation-delay:${i*7}ms"></span>`;g.innerHTML=h;g.dataset.built=1;}}
+
+/* ================= KUIS DUEL (25 SOAL PDF) ================= */
+const LPTS=[10,20,30],LLVL=['Mudah','Sedang','HOTS'];
+const QUIZ=[
+{lvl:0,q:"Makna dari skala peta 1 : 500.000 adalah…",opts:["1 cm pada peta mewakili 5 km jarak sebenarnya","1 cm pada peta mewakili 50 km jarak sebenarnya","1 cm pada peta mewakili 500 km jarak sebenarnya","1 cm pada peta mewakili 5.000 km jarak sebenarnya"],ans:0,exp:"Skala 1 : 500.000 artinya 1 cm pada peta mewakili 500.000 cm. Karena 500.000 cm = 5 km, maka 1 cm mewakili 5 km."},
+{lvl:0,q:"Jarak sebenarnya antara kota A dan B adalah 60 km. Jika jarak pada peta adalah 3 cm, skala peta tersebut adalah…",opts:["1 : 20.000","1 : 200.000","1 : 2.000.000","1 : 20.000.000"],ans:2,exp:"JS = 60 km = 6.000.000 cm. Skala = JP : JS = 3 : 6.000.000 = 1 : 2.000.000."},
+{lvl:0,q:"Sebuah peta memiliki skala 1 : 300.000. Jika jarak dua kota pada peta 8 cm, jarak sebenarnya adalah…",opts:["2,4 km","24 km","240 km","2.400 km"],ans:1,exp:"JS = JP × skala = 8 × 300.000 = 2.400.000 cm = 24 km."},
+{lvl:0,q:"Jarak sebenarnya kota P ke kota Q adalah 45 km. Jika digambar pada peta dengan skala 1 : 1.500.000, jarak pada peta adalah…",opts:["3 cm","4 cm","5 cm","6 cm"],ans:0,exp:"JS = 45 km = 4.500.000 cm. JP = 4.500.000 ÷ 1.500.000 = 3 cm."},
+{lvl:0,q:"Pada sebuah denah, tertulis keterangan bahwa setiap 1 cm mewakili 20 km. Skala denah tersebut dituliskan sebagai…",opts:["1 : 20.000","1 : 200.000","1 : 2.000.000","1 : 20.000.000"],ans:2,exp:"20 km = 2.000.000 cm. Skala = 1 cm : 2.000.000 cm = 1 : 2.000.000."},
+{lvl:0,q:"Jarak 15 cm pada peta mewakili jarak sebenarnya sejauh 750 km. Skala peta tersebut adalah…",opts:["1 : 5.000.000","1 : 500.000","1 : 50.000","1 : 5.000"],ans:0,exp:"JS = 750 km = 75.000.000 cm. Skala = 15 : 75.000.000 = 1 : 5.000.000."},
+{lvl:0,q:"Peta berskala 1 : 400.000 menunjukkan jarak kota C dan D sejauh 12,5 cm. Jarak sesungguhnya kota tersebut adalah…",opts:["50 km","500 km","125 km","250 km"],ans:0,exp:"JS = 12,5 × 400.000 = 5.000.000 cm = 50 km."},
+{lvl:0,q:"Jarak sebenarnya dua gedung adalah 100 km. Jika digambar dengan skala 1 : 2.500.000, jarak kedua gedung pada gambar adalah…",opts:["2 cm","4 cm","5 cm","8 cm"],ans:1,exp:"JS = 100 km = 10.000.000 cm. JP = 10.000.000 ÷ 2.500.000 = 4 cm."},
+{lvl:1,q:"Sebuah taman digambar pada denah berskala 1 : 250. Jika ukuran taman pada denah adalah 8 cm × 6 cm, luas taman sebenarnya adalah…",opts:["30 m²","120 m²","300 m²","480 m²"],ans:2,exp:"Panjang sebenarnya = 8 × 250 = 2.000 cm = 20 m. Lebar = 6 × 250 = 1.500 cm = 15 m. Luas = 20 × 15 = 300 m²."},
+{lvl:1,q:"Jarak kota A ke B pada peta berskala 1 : 1.200.000 adalah 4 cm. Jika Budi mengendarai sepeda motor dengan kecepatan rata-rata 40 km/jam, lama perjalanan Budi adalah…",opts:["1 jam","1 jam 12 menit","1 jam 20 menit","1 jam 30 menit"],ans:1,exp:"Jarak sebenarnya = 4 × 1.200.000 = 4.800.000 cm = 48 km. Waktu = 48 ÷ 40 = 1,2 jam = 1 jam 12 menit."},
+{lvl:1,q:"Sebidang tanah berbentuk persegi memiliki keliling pada denah 24 cm. Jika skala denah 1 : 300, luas tanah sebenarnya adalah…",opts:["324 m²","144 m²","72 m²","36 m²"],ans:0,exp:"Sisi pada denah = 24 ÷ 4 = 6 cm. Sisi sebenarnya = 6 × 300 = 1.800 cm = 18 m. Luas = 18 × 18 = 324 m²."},
+{lvl:1,q:"Jarak kota K dan L pada peta A yang berskala 1 : 50.000 adalah 10 cm. Jika digambar pada peta B yang berskala 1 : 250.000, jaraknya menjadi…",opts:["1 cm","2 cm","4 cm","5 cm"],ans:1,exp:"Jarak sebenarnya = 10 × 50.000 = 500.000 cm. Jarak pada peta B = 500.000 ÷ 250.000 = 2 cm."},
+{lvl:1,q:"Sebuah tiang bendera memiliki tinggi sebenarnya 12 meter. Jika digambar dengan skala 1 : 80, tinggi tiang bendera pada gambar adalah…",opts:["10 cm","12 cm","15 cm","20 cm"],ans:2,exp:"JS = 12 m = 1.200 cm. JP = 1.200 ÷ 80 = 15 cm."},
+{lvl:1,q:"Pada denah berskala 1 : 150, ruang tamu berukuran 3 cm × 4 cm. Jika lantai akan dipasangi keramik dengan biaya Rp50.000,00 per m², biaya total yang dibutuhkan adalah…",opts:["Rp600.000,00","Rp900.000,00","Rp1.350.000,00","Rp2.700.000,00"],ans:2,exp:"Panjang = 3 × 150 = 4,5 m; lebar = 4 × 150 = 6 m. Luas = 27 m². Biaya = 27 × 50.000 = Rp1.350.000,00."},
+{lvl:1,q:"Sebuah model pesawat dibuat dengan panjang 40 cm dan lebar sayap 32 cm. Jika panjang pesawat sebenarnya 30 meter, lebar sayap pesawat sebenarnya adalah…",opts:["18 meter","20 meter","24 meter","28 meter"],ans:2,exp:"Panjang sebenarnya = 3.000 cm. Skala = 40 : 3.000 = 1 : 75. Lebar asli = 32 × 75 = 2.400 cm = 24 meter."},
+{lvl:1,q:"Luas sebuah persegi panjang pada denah adalah 20 cm². Jika denah berskala 1 : 500, luas persegi panjang sebenarnya adalah…",opts:["100 m²","500 m²","1.000 m²","5.000 m²"],ans:1,exp:"Untuk luas gunakan kuadrat skala: 20 × 500² = 20 × 250.000 = 5.000.000 cm². Karena 1 m² = 10.000 cm², hasilnya 500 m²."},
+{lvl:1,q:"Tinggi sebuah gedung pada maket berskala 1 : 200 adalah 15 cm. Berapa tinggi sebenarnya gedung tersebut?",opts:["15 meter","20 meter","30 meter","300 meter"],ans:2,exp:"Tinggi sebenarnya = 15 × 200 = 3.000 cm = 30 meter."},
+{lvl:2,q:"Jarak kota A ke B pada peta I adalah 5 cm. Jarak yang sama pada peta II adalah 8 cm. Jika peta I memiliki skala 1 : 400.000, maka skala peta II adalah…",opts:["1 : 150.000","1 : 200.000","1 : 250.000","1 : 640.000"],ans:2,exp:"Jarak sebenarnya = 5 × 400.000 = 2.000.000 cm. Skala peta II = 8 : 2.000.000 = 1 : 250.000."},
+{lvl:2,q:"Kebun berbentuk persegi panjang dengan panjang sebenarnya 80 m dan lebar 60 m. Pada denah, luasnya digambar menjadi 12 cm². Skala denah tersebut adalah…",opts:["1 : 400","1 : 2.000","1 : 4.000","1 : 40.000"],ans:1,exp:"Luas sebenarnya = 80 × 60 = 4.800 m² = 48.000.000 cm². Skala² = 12/48.000.000 = 1/4.000.000 → skala = 1 : 2.000."},
+{lvl:2,q:"Jarak kota X dan Y adalah 150 km. Peta A berskala 1 : 1.500.000, Peta B berskala 1 : 3.000.000. Selisih jarak X–Y pada Peta A dan Peta B adalah…",opts:["2 cm","5 cm","8 cm","10 cm"],ans:1,exp:"JS = 15.000.000 cm. Peta A: 15.000.000 ÷ 1.500.000 = 10 cm. Peta B: 15.000.000 ÷ 3.000.000 = 5 cm. Selisih = 5 cm."},
+{lvl:2,q:"Lapangan berbentuk lingkaran memiliki keliling sebenarnya 88 m. Digambar dengan skala 1 : 200. Luas lapangan pada denah adalah… (π = 22/7)",opts:["616 cm²","308 cm²","154 cm²","44 cm²"],ans:2,exp:"Keliling denah = 8.800 ÷ 200 = 44 cm. 44 = 2 × (22/7) × r → r = 7 cm. Luas denah = (22/7) × 7 × 7 = 154 cm²."},
+{lvl:2,q:"Tiga kota A, B, C membentuk segitiga siku-siku di B. Jarak A–B = 30 km dan B–C = 40 km. Dengan skala 1 : 1.000.000, jarak lurus A ke C pada peta adalah…",opts:["3 cm","4 cm","5 cm","7 cm"],ans:2,exp:"Teorema Pythagoras: AC = √(30² + 40²) = √2500 = 50 km = 5.000.000 cm. Jarak pada peta = 5.000.000 ÷ 1.000.000 = 5 cm."},
+{lvl:2,q:"Pak Ali mempunyai tanah berukuran 30 m × 40 m dan ingin menggambarnya pada kertas maksimal 15 cm × 20 cm. Skala terbesar yang mungkin adalah…",opts:["1 : 100","1 : 150","1 : 200","1 : 250"],ans:2,exp:"Tanah: 4.000 cm × 3.000 cm. Batas skala panjang = 20/4.000 = 1/200; batas lebar = 15/3.000 = 1/200. Skala terbesar = 1 : 200."},
+{lvl:2,q:"Pada peta X (skala tidak diketahui), jarak kota P dan Q adalah 6 cm. Pada peta Y berskala 1 : 600.000, jarak yang sama adalah 10 cm. Skala peta X adalah…",opts:["1 : 360.000","1 : 500.000","1 : 1.000.000","1 : 1.200.000"],ans:2,exp:"Jarak sebenarnya = 10 × 600.000 = 6.000.000 cm. Skala peta X = 6 : 6.000.000 = 1 : 1.000.000."},
+{lvl:2,q:"Andi berlari mengelilingi lapangan persegi. Pada denah berskala 1 : 400, panjang sisi lapangan 5 cm. Jika Andi berlari 3 putaran, total jarak yang ditempuh adalah…",opts:["60 m","80 m","120 m","240 m"],ans:3,exp:"Sisi sebenarnya = 5 × 400 = 2.000 cm = 20 m. Keliling = 4 × 20 = 80 m. Tiga putaran = 3 × 80 = 240 m."}];
+
+const qz={taken:Array(25).fill(0),scores:[0,0],turn:1,cur:[null,null],sel:[-1,-1],fin:[false,false]};
+function buildGrid(){$('numGrid').innerHTML=QUIZ.map((q,i)=>`<button class="numb lv${q.lvl}" id="nb${i}" title="Level: ${LLVL[q.lvl]} • +${LPTS[q.lvl]} poin" onclick="pickQ(${i})">${i+1}</button>`).join('');}
+function setTurn(t){qz.turn=t;$('turn1').classList.toggle('active',t===1);$('turn2').classList.toggle('active',t===2);}
+function pickQ(i){if(qz.taken[i]){toast('Soal ini sudah diambil! 🚫');return;}
+ const s=qz.turn-1;
+ if(qz.cur[s]!==null&&!qz.fin[s]){toast('Selesaikan soalmu dulu, '+S.names[s]+'! ⏳');return;}
+ qz.cur[s]=i;qz.sel[s]=-1;qz.fin[s]=false;qz.taken[i]=s+1;
+ $('nb'+i).classList.add('taken'+(s+1));$('nb'+i).disabled=true;
+ renderPanel(s);setTurn(s===0?2:1);quizProg();sndClick();}
+function renderPanel(s){const i=qz.cur[s],q=QUIZ[i];
+ $('panel'+(s+1)).innerHTML=`<div class="dp-head">${s===0?'🟣':'🔵'} <span data-n${s+1}></span> • Soal ${i+1} <span class="lvl lv${q.lvl}">${LLVL[q.lvl]}</span> <span style="font-size:13px">+${LPTS[q.lvl]} poin</span></div><div class="dp-q">${q.q}</div><div class="opts">${q.opts.map((o,j)=>`<button class="opt" id="dp${s}o${j}" onclick="dpSel(${s},${j})">${'ABCD'[j]}. ${o}</button>`).join('')}</div><div class="qact"><button class="btn-check" onclick="dpCheck(${s})">✔ Cek Jawaban</button><button class="btn-exp hidden" id="dpExpBtn${s}" onclick="dpExp(${s})">📖 Pembahasan</button></div><div class="fb" id="dpFb${s}"></div><div class="exp hidden" id="dpExp${s}">💡 ${q.exp}</div>`;
+ refreshNames();}
+function panelEmpty(s){$('panel'+(s+1)).innerHTML=`<div class="dp-head">${s===0?'🟣':'🔵'} <span data-n${s+1}></span></div><div class="dp-empty">👆 ${esc(S.names[s])}, pilih nomor soal di atas untuk mulai!<br><span style="font-size:13px">Bisakah kalahkan lawanmu? 😎</span></div>`;refreshNames();}
+function dpSel(s,j){if(qz.fin[s])return;qz.sel[s]=j;for(let x=0;x<4;x++)$('dp'+s+'o'+x).classList.toggle('sel',x===j);sndClick();}
+function dpCheck(s){if(qz.fin[s])return;const i=qz.cur[s];if(i===null)return;if(qz.sel[s]<0){toast('Pilih salah satu jawaban dulu! ✋');return;}
+ qz.fin[s]=true;const q=QUIZ[i],good=qz.sel[s]===q.ans,fb=$('dpFb'+s);
+ for(let j=0;j<4;j++){const ob=$('dp'+s+'o'+j);ob.disabled=true;if(j===q.ans)ob.classList.add('right');}
+ $('dpExpBtn'+s).classList.remove('hidden');$('dpExp'+s).classList.remove('hidden');
+ if(good){const pts=LPTS[q.lvl];qz.scores[s]+=pts;fb.className='fb good';fb.innerHTML=`🎉 Benar! +${pts} poin untuk ${esc(S.names[s])}!<br>👉 Pilih nomor lain untuk melanjutkan!`;sndOK();confetti(16);}
+ else{fb.className='fb bad';fb.innerHTML=`😢 Belum tepat, ${esc(S.names[s])}. 0 poin — semangat, pilih soal lain! 💪`;sndNO();}
+ $('score1').textContent=qz.scores[0];$('score2').textContent=qz.scores[1];quizProg();}
+function dpExp(s){$('dpExp'+s).classList.toggle('hidden');}
+function quizProg(){const n=qz.taken.filter(x=>x>0).length;$('quizProg').textContent=`📊 Soal dikerjakan: ${n} / 25`;
+ if(n===25){const[a,b]=qz.scores;let msg;
+  if(a===b)msg=`🤝 HASIL AKHIR: SERI! (${a} — ${b})`;
+  else{const w=a>b?0:1;msg=`🏆 HASIL AKHIR: ${esc(S.names[w])} MENANG dengan ${Math.max(a,b)} poin! 🎉`;}
+  $('quizResult').textContent=msg;confetti(45);}}
+function quizReset(){qz.taken=Array(25).fill(0);qz.scores=[0,0];qz.cur=[null,null];qz.sel=[-1,-1];qz.fin=[false,false];setTurn(1);buildGrid();$('score1').textContent=0;$('score2').textContent=0;$('quizProg').textContent='📊 Soal dikerjakan: 0 / 25';$('quizResult').textContent='';panelEmpty(0);panelEmpty(1);toast('Kuis direset. Selamat bertanding! ⚔️');}
+
+/* ================= GAME: EKSPEDISI BALON ================= */
+const TARGETS=[60,45,120,30,90];
+const game={round:0,score:0,done:0,sc:null,jp:null};
+function gStart(){game.round=0;game.score=0;game.done=0;$('gScore').textContent=0;$('gStars').textContent='☆☆☆☆☆';$('gMsg').className='gmsg';$('gMsg').textContent='Misi dimulai! Diskusikan strategi dengan pasanganmu 🤝';gRound();}
+function gRound(){game.sc=null;game.jp=null;
+ const T=TARGETS[game.round];
+ const cands=[100000,200000,300000,500000,1000000,1500000,2000000,3000000].filter(N=>(T*100000)%N===0&&(T*100000)/N>=2&&(T*100000)/N<=24);
+ const N=cands[Math.floor(Math.random()*cands.length)];
+ const jp=(T*100000)/N;
+ const ds=shuf([100000,200000,300000,500000,1000000,1500000,2000000,3000000].filter(x=>x!==N)).slice(0,2);
+ const dj=shuf([jp+2,jp+3,jp+5,jp+1,jp-1,jp-2].filter(x=>x>0&&x!==jp)).slice(0,2);
+ const sOps=shuf([N,...ds]),jOps=shuf([jp,...dj]);
+ $('gMission').innerHTML=`<b>🎈 Misi ${game.round+1} / 5</b><br>Pulau harta karun berjarak <b class="bignum">${T} km</b> dari kamp!<br><span class="muted">Syarat terbang: skala × jarak peta = jarak sebenarnya (dalam cm)</span>`;
+ $('gScOps').innerHTML=sOps.map(n=>`<button class="opbtn" data-v="${n}" onclick="gPick('sc',${n},this)">1 : ${n.toLocaleString('id-ID')}</button>`).join('');
+ $('gJpOps').innerHTML=jOps.map(x=>`<button class="opbtn" data-v="${x}" onclick="gPick('jp',${x},this)">${x} cm</button>`).join('');
+ $('gBalloon').classList.remove('fly');
+ refreshNames();$('gMsg').className='gmsg';$('gMsg').textContent=`Misi ${game.round+1}: target ${T} km. Diskusikan, lalu pilih! 🗺️`;}
+function gPick(t,v,btn){if(t==='sc'){game.sc=v;btn.parentElement.querySelectorAll('.opbtn').forEach(b=>b.classList.remove('sel'));}
+ else{game.jp=v;btn.parentElement.querySelectorAll('.opbtn').forEach(b=>b.classList.remove('sel'));}
+ btn.classList.add('sel');sndClick();}
+function gFly(){const T=TARGETS[game.round],box=$('gMsg'),b=$('gBalloon');
+ if(game.sc===null||game.jp===null){toast(`${S.names[game.sc===null?0:1]} belum memilih! Lengkapi dulu 🟣🔵`);return;}
+ const prod=game.sc*game.jp,target=T*100000;
+ b.classList.remove('fly','shake');void b.offsetWidth;
+ if(prod===target){const pts=100;game.score+=pts;game.done++;
+  $('gScore').textContent=game.score;$('gStars').textContent='⭐'.repeat(game.done)+'☆'.repeat(5-game.done);
+  b.classList.add('fly');sndOK();confetti(22);
+  box.className='gmsg good';box.textContent=`🚀 Berhasil! ${game.jp.toLocaleString('id-ID')} cm × ${game.sc.toLocaleString('id-ID')} = ${(prod).toLocaleString('id-ID')} cm = ${T} km ✓ Tepat di pulau! +${pts} poin tim! 🏝️💰`;
+  setTimeout(()=>{b.classList.remove('fly');
+   if(game.round<4){game.round++;gRound();}
+   else{box.className='gmsg good';box.textContent=`🏆 SEMUA MISI SELESAI! Skor tim akhir: ${game.score} poin. Kalian tim kartografer hebat! 🗺️⭐`;confetti(35);}},2000);}
+ else{b.classList.add('shake');sndNO();
+  box.className='gmsg bad';box.textContent=`❌ ${game.jp.toLocaleString('id-ID')} cm × ${game.sc.toLocaleString('id-ID')} = ${(prod).toLocaleString('id-ID')} cm = ${fmtNum(prod/100000)} km ≠ ${T} km. Coba hitung ulang: berapa cm yang dibutuhkan? Kamu pasti bisa! 💪`;}}
+
+/* ================= REFLEKSI ================= */
+function refMood(n){document.querySelectorAll('.emo').forEach((e,i)=>e.classList.toggle('sel',i===n));sndClick();}
+function refSave(){const v=$('refText').value.trim();$('refSaved').textContent=v?`💜 Terima kasih, ${S.names[0]} & ${S.names[1]}! Refleksimu sudah tercatat.`:'💭 Tulis dulu pendapatmu di kolom, ya!';}
+
+/* ================= TAB ================= */
+document.querySelectorAll('.slide').forEach(sec=>{const tabs=sec.querySelectorAll('.tab'),panes=sec.querySelectorAll('.tabpane');
+ tabs.forEach((t,i)=>t.addEventListener('click',()=>{tabs.forEach(x=>x.classList.remove('active'));t.classList.add('active');panes.forEach(p=>p.classList.remove('active'));if(panes[i])panes[i].classList.add('active');}));});
+
+/* ================= INIT ================= */
+window.addEventListener('DOMContentLoaded',()=>{
+ renderPractice('pr1',L1);renderPractice('pr2',L2);renderPractice('pr3',L3);renderPractice('pr4',L4);renderPractice('pr5',L5);
+ buildMenu();buildGrid();setTurn(1);panelEmpty(0);panelEmpty(1);quizProg();
+ zoomRender();skPreset(3,60,'100000');$('skSteps').innerHTML='';$('skOut').innerHTML='Isi data lalu tekan Hitung! 🧭';
+ m3live();m4live();luasRender();gStart();
+ ['name1','name2'].forEach((id,idx)=>{$(id).addEventListener('input',()=>{const v=$(id).value.trim();S.names[idx]=v||('Siswa '+(idx+1));refreshNames();panelEmptyIfFree(idx);});});
+ $('progressBar').style.width=(1/13*100)+'%';
+});
+function panelEmptyIfFree(s){if(qz.cur[s]===null)panelEmpty(s);}
+</script>
+</body>
+</html>
